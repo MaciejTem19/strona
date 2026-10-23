@@ -1,0 +1,83 @@
+---
+//Przedziałka: kreska — łapa — kreska; kreski wygaszone gradientem od zewnątrz.
+//Animacje są w ./pawDividerAnimations.ts (enterPawDivider / leavePawDivider / showPawDivider) — woła się je z elementem .paw-divider
+//
+//Przykład użycia — przedziałka chowa się przy wyjściu panelu i wraca, gdy wjeżdża nowy:
+//
+//  ---
+//  import PawDivider from "../global/pawDevider.astro";
+//  ---
+//  <PawDivider class="welcome-divider my-4" color="var(--color-primary-600)" size={28} />
+//
+//  <script>
+//      import { enterPawDivider, leavePawDivider } from "../global/pawDividerAnimations";
+//      import { PANEL_ENTER_EVENT, PANEL_LEAVE_EVENT } from "./panelEvents";
+//
+//      const divider = document.querySelector(".welcome-divider");
+//      if (divider) {
+//          document.addEventListener(PANEL_LEAVE_EVENT, () => leavePawDivider(divider));
+//          document.addEventListener(PANEL_ENTER_EVENT, () => enterPawDivider(divider));
+//      }
+//
+//      //Albo po kolei: odczekaj wyjście, potem podmień treść i odpal wjazd
+//      //  await leavePawDivider(divider);
+//      //  ...podmiana treści...
+//      //  enterPawDivider(divider);
+//  </script>
+//
+//Bez animacji na starcie: <PawDivider playOnLoad={false} /> i potem showPawDivider(element) albo enterPawDivider(element)
+export interface Props {
+    //Wjazd od razu po załadowaniu strony; false — przedziałka czeka, aż ktoś sam zawoła animację
+    playOnLoad?: boolean
+    //Kolor łapy i kresek — dowolny kolor CSS, najlepiej zmienna z palety, np. "var(--color-primary-600)"
+    color?: string
+    //Wielkość łapy — liczba to px, string to dowolna jednostka CSS ("1.5rem"); grubość kresek skaluje się razem z nią
+    size?: number | string
+    //false — łapa stoi cały czas widoczna, wjeżdżają i chowają się tylko kreski; trafia do data-paw-animation
+    pawAnimation?: boolean
+    class?: string
+}
+
+const { playOnLoad = true, color = "var(--color-secondary-600)", size = 22, pawAnimation = true, class: className = "" } = Astro.props;
+
+const pawSize = typeof size === "number" ? `${size}px` : size;
+
+---
+
+<div class:list={["paw-divider flex items-center gap-4", className]} style={{ "--paw-color": color, "--paw-size": pawSize }} data-play-on-load={playOnLoad ? "" : undefined} data-paw-animation={pawAnimation ? "true" : "false"} aria-hidden="true">
+    <span class="paw-divider-line paw-divider-line--left flex-1 origin-right" />
+    <span class="paw-divider-svg shrink-0" />
+    <span class="paw-divider-line paw-divider-line--right flex-1 origin-left" />
+</div>
+
+
+<style>
+    /* Wypełniona łapa z public/svgs jako maska — kolor bierze się z tła, więc da się go ustawić z palety */
+    .paw-divider-svg {
+        width: var(--paw-size);
+        height: var(--paw-size);
+        background-color: var(--paw-color);
+        mask: url("/svgs/paw_fill.svg") center / contain no-repeat;
+        -webkit-mask: url("/svgs/paw_fill.svg") center / contain no-repeat;
+    }
+
+    /* Kreski wygaszone od zewnątrz; kolor z propa, więc gradient w CSS zamiast klas Tailwinda.
+       Grubość 1/11 łapy — przy domyślnych 22px wychodzi 2px jak wcześniej */
+    .paw-divider-line {
+        height: calc(var(--paw-size) / 11);
+        --paw-line-color: color-mix(in oklab, var(--paw-color) 80%, transparent);
+    }
+    .paw-divider-line--left {
+        background-image: linear-gradient(to right, transparent, var(--paw-line-color));
+    }
+    .paw-divider-line--right {
+        background-image: linear-gradient(to left, transparent, var(--paw-line-color));
+    }
+</style>
+
+
+<script>
+    import { enterPawDivider } from "./pawDividerAnimations";
+
+    document.querySelectorAll(".paw-divider[data-play-on-load]").forEach((divider) => enterPawDivider(divider));
+</script>

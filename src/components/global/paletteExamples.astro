@@ -1,0 +1,117 @@
+---
+//Przykłady użycia palety z @theme w typowych elementach strony.
+//Klasy muszą być wpisane dosłownie — Tailwind generuje tylko te, które znajdzie w kodzie
+const colors = [
+    { name: "primary", bg: "bg-primary-500", hover: "hover:bg-primary-600", soft: "bg-primary-100", softText: "text-primary-800", border: "border-primary-500", text: "text-primary-700", outline: "hover:bg-primary-50" },
+    { name: "secondary", bg: "bg-secondary-500", hover: "hover:bg-secondary-600", soft: "bg-secondary-100", softText: "text-secondary-800", border: "border-secondary-500", text: "text-secondary-700", outline: "hover:bg-secondary-50" },
+    { name: "tetriary", bg: "bg-tetriary-500", hover: "hover:bg-tetriary-600", soft: "bg-tetriary-100", softText: "text-tetriary-800", border: "border-tetriary-500", text: "text-tetriary-700", outline: "hover:bg-tetriary-50" },
+    { name: "light", bg: "bg-light-500", hover: "hover:bg-light-600", soft: "bg-light-100", softText: "text-light-900", border: "border-light-600", text: "text-light-800", outline: "hover:bg-light-50" },
+    { name: "dark", bg: "bg-dark-800", hover: "hover:bg-dark-900", soft: "bg-dark-100", softText: "text-dark-800", border: "border-dark-700", text: "text-dark-700", outline: "hover:bg-dark-50" },
+];
+
+const courses = [
+    { title: "Kurs podstawowy", level: "Początkujący", price: "299 zł", accent: "border-t-primary-500", badge: "bg-primary-100 text-primary-800", button: "bg-primary-500 hover:bg-primary-600 text-dark-950" },
+    { title: "Kurs średniozaawansowany", level: "Średni", price: "399 zł", accent: "border-t-secondary-500", badge: "bg-secondary-100 text-secondary-800", button: "bg-secondary-500 hover:bg-secondary-600 text-dark-950" },
+    { title: "Kurs mistrzowski", level: "Zaawansowany", price: "549 zł", accent: "border-t-tetriary-500", badge: "bg-tetriary-100 text-tetriary-800", button: "bg-tetriary-600 hover:bg-tetriary-700 text-white" },
+];
+
+const alerts = [
+    { label: "Sukces", text: "Zapisano Cię na zajęcia.", classes: "bg-primary-50 border-primary-500 text-primary-900" },
+    { label: "Uwaga", text: "Zostały ostatnie 3 miejsca.", classes: "bg-secondary-50 border-secondary-500 text-secondary-900" },
+    { label: "Błąd", text: "Nie udało się wysłać formularza.", classes: "bg-tetriary-50 border-tetriary-500 text-tetriary-900" },
+    { label: "Info", text: "Nowe terminy pojawią się w piątek.", classes: "bg-light-50 border-light-600 text-light-900" },
+];
+---
+
+<section class="flex flex-col gap-12 p-8 bg-dark-50 text-dark-900">
+    <h2 class="text-3xl font-bold">Przykłady użycia palety</h2>
+
+    <!-- Przyciski -->
+    <div class="flex flex-col gap-4">
+        <h3 class="text-xl font-semibold">Przyciski — pełne, obrysowane, delikatne</h3>
+        {colors.map((c) => (
+            <div class="flex flex-wrap items-center gap-3">
+                <code class="w-24 text-xs opacity-70">{c.name}</code>
+                <button class={`${c.bg} ${c.hover} ${c.name === "dark" ? "text-white" : "text-dark-950"} px-5 py-2 rounded-full font-semibold transition-colors`}>Zapisz się</button>
+                <button class={`border-2 ${c.border} ${c.text} ${c.outline} px-5 py-2 rounded-full font-semibold transition-colors`}>Więcej</button>
+                <button class={`${c.soft} ${c.softText} px-5 py-2 rounded-full font-semibold`}>Szczegóły</button>
+                <span class={`${c.soft} ${c.softText} px-3 py-1 rounded-full text-xs font-semibold`}>Etykieta</span>
+            </div>
+        ))}
+    </div>
+
+    <!-- Karty -->
+    <div class="flex flex-col gap-4">
+        <h3 class="text-xl font-semibold">Karty kursów — akcent koloru na górze</h3>
+        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {courses.map((course) => (
+                <article class={`flex flex-col gap-3 p-6 bg-white rounded-2xl border-t-4 ${course.accent} shadow-md`}>
+                    <span class={`self-start px-3 py-1 rounded-full text-xs font-semibold ${course.badge}`}>{course.level}</span>
+                    <h4 class="text-xl font-bold text-dark-900">{course.title}</h4>
+                    <p class="text-dark-600">Zajęcia w małych grupach, materiały i certyfikat ukończenia.</p>
+                    <p class="text-2xl font-bold text-dark-950">{course.price}</p>
+                    <button class={`mt-auto py-2 rounded-xl font-semibold transition-colors ${course.button}`}>Wybieram</button>
+                </article>
+            ))}
+        </div>
+    </div>
+
+    <!-- Alerty -->
+    <div class="flex flex-col gap-4">
+        <h3 class="text-xl font-semibold">Komunikaty</h3>
+        <div class="flex flex-col gap-3 max-w-xl">
+            {alerts.map((alert) => (
+                <div class={`border-l-4 px-4 py-3 rounded-r-lg ${alert.classes}`}>
+                    <strong>{alert.label}:</strong> {alert.text}
+                </div>
+            ))}
+        </div>
+    </div>
+
+    <!-- Sekcje -->
+    <div class="flex flex-col gap-4">
+        <h3 class="text-xl font-semibold">Sekcje — jasna i ciemna</h3>
+        <div class="grid gap-6 lg:grid-cols-2">
+            <div class="flex flex-col gap-3 p-8 rounded-2xl bg-light-50 border border-light-200">
+                <h4 class="text-2xl font-bold text-dark-900">Dołącz do <span class="text-primary-600">Akademii</span></h4>
+                <p class="text-dark-700">Jasne tło z palety <code>light</code>, akcent w tekście w <code>primary-600</code>.</p>
+                <div class="flex gap-3">
+                    <button class="bg-primary-500 hover:bg-primary-600 text-dark-950 px-5 py-2 rounded-full font-semibold">Zacznij</button>
+                    <button class="text-dark-800 underline decoration-secondary-500 decoration-2 underline-offset-4 font-semibold">Zobacz ofertę</button>
+                </div>
+            </div>
+            <div class="flex flex-col gap-3 p-8 rounded-2xl bg-dark-900 text-dark-100">
+                <h4 class="text-2xl font-bold text-white">Dołącz do <span class="text-light-400">Akademii</span></h4>
+                <p class="text-dark-300">Ciemne tło <code>dark-900</code>, akcent w <code>light-400</code>.</p>
+                <div class="flex gap-3">
+                    <button class="bg-light-400 hover:bg-light-500 text-dark-950 px-5 py-2 rounded-full font-semibold">Zacznij</button>
+                    <button class="border-2 border-tetriary-400 text-tetriary-300 hover:bg-tetriary-950 px-5 py-2 rounded-full font-semibold">Kontakt</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gradienty -->
+    <div class="flex flex-col gap-4">
+        <h3 class="text-xl font-semibold">Gradienty</h3>
+        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div class="h-28 rounded-2xl bg-linear-135 from-primary-400 to-primary-700 flex items-end p-3 text-white text-xs font-mono">primary-400 → primary-700</div>
+            <div class="h-28 rounded-2xl bg-linear-135 from-secondary-400 to-tetriary-500 flex items-end p-3 text-white text-xs font-mono">secondary-400 → tetriary-500</div>
+            <div class="h-28 rounded-2xl bg-linear-135 from-light-300 to-primary-500 flex items-end p-3 text-dark-950 text-xs font-mono">light-300 → primary-500</div>
+            <div class="h-28 rounded-2xl bg-linear-135 from-dark-700 to-dark-950 flex items-end p-3 text-white text-xs font-mono">dark-700 → dark-950</div>
+        </div>
+        <p class="text-5xl font-extrabold w-fit bg-linear-to-r from-primary-500 via-secondary-500 to-tetriary-500 bg-clip-text text-transparent">Oohs n Woosh</p>
+    </div>
+
+    <!-- Kontrast tekstu -->
+    <div class="flex flex-col gap-4">
+        <h3 class="text-xl font-semibold">Tekst na odcieniach 500 — który kolor tekstu czytelny</h3>
+        <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+            <div class="p-4 rounded-xl bg-primary-500"><p class="text-dark-950 font-semibold">dark-950 ✓</p><p class="text-white font-semibold">white ✗</p></div>
+            <div class="p-4 rounded-xl bg-secondary-500"><p class="text-dark-950 font-semibold">dark-950 ✓</p><p class="text-white font-semibold">white ~</p></div>
+            <div class="p-4 rounded-xl bg-tetriary-500"><p class="text-dark-950 font-semibold">dark-950 ~</p><p class="text-white font-semibold">white ✓</p></div>
+            <div class="p-4 rounded-xl bg-light-500"><p class="text-dark-950 font-semibold">dark-950 ✓</p><p class="text-white font-semibold">white ✗</p></div>
+            <div class="p-4 rounded-xl bg-dark-500"><p class="text-dark-950 font-semibold">dark-950 ~</p><p class="text-white font-semibold">white ~</p></div>
+        </div>
+    </div>
+</section>

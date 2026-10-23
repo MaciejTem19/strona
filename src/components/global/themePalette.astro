@@ -1,0 +1,144 @@
+---
+import tailwindCss from "../../styles/tailwind.css?raw";
+
+//Czytamy @theme prosto z tailwind.css, żeby paleta nie rozjechała się z prawdziwymi wartościami
+const theme = tailwindCss.match(/@theme\s*{([\s\S]*?)}/)?.[1] ?? "";
+const variables = [...theme.matchAll(/--([\w-]+):\s*([^;]+);/g)].map(([, name, value]) => ({ name, value: value.trim() }));
+
+//Kolory grupujemy po nazwie bez stopnia jasności, np. "primary-500" → "primary"
+const colorGroups = new Map<string, { name: string, value: string }[]>();
+for (const { name, value } of variables) {
+    if (!name.startsWith("color-")) continue;
+    const colorName = name.slice("color-".length);
+    const group = colorName.replace(/-\d+$/, "");
+    if (!colorGroups.has(group)) colorGroups.set(group, []);
+    colorGroups.get(group)!.push({ name: colorName, value });
+}
+
+const fonts = variables
+    .filter(({ name }) => name.startsWith("font-"))
+    .map(({ name, value }) => ({ name: name.slice("font-".length), value }));
+
+//Nazwy klas muszą być wpisane dosłownie — Tailwind generuje tylko te @utility, które znajdzie w kodzie
+const textTypes = [
+    { group: "Hero", classes: ["text-hero-big", "text-hero", "text-hero-sm", "text-hero-xs"] },
+    { group: "Nagłówki", classes: ["text-header1", "text-header2", "text-header3", "text-header4"] },
+    { group: "Wyróżnione wartości", classes: ["text-param-lg", "text-param", "text-param-sm"] },
+    { group: "Treść", classes: ["text-content-lg", "text-content", "text-content-sm"] },
+    { group: "Podpisy", classes: ["text-caption"] },
+];
+
+//Rozmiar i grubość czytamy z definicji @utility, żeby opis pod przykładem zgadzał się z CSS
+const utilityInfo = (className: string) => {
+    const body = tailwindCss.match(new RegExp(`@utility ${className}\\s*{([^}]*)}`))?.[1] ?? "";
+    const property = (name: string) => body.match(new RegExp(`(?:^|\\s)${name}:\\s*([^;]+);`))?.[1].trim();
+    return [property("font-size"), property("font-weight"), property("line-height")].filter(Boolean).join(" / ");
+};
+
+const tailwindSizes = ["text-xs", "text-sm", "text-base", "text-lg", "text-xl", "text-2xl", "text-3xl", "text-4xl", "text-5xl", "text-6xl"];
+---
+
+<section class="theme-palette">
+    <h2>Kolory</h2>
+    {[...colorGroups].map(([group, colors]) => (
+        <div class="theme-palette-group">
+            <h3>{group}</h3>
+            <div class="theme-palette-row">
+                {colors.map(({ name, value }) => (
+                    <div class="theme-palette-swatch">
+                        <span class="theme-palette-color" style={`background-color: ${value};`} />
+                        <code>{name}</code>
+                        <code>{value}</code>
+                    </div>
+                ))}
+            </div>
+        </div>
+    ))}
+
+    <h2>Fonty</h2>
+    {fonts.map(({ name, value }) => (
+        <div class="theme-palette-font">
+            <code>font-{name}</code>
+            <p style={`font-family: ${value};`}>Zażółć gęślą jaźń — The quick brown fox 0123456789</p>
+            <code>{value}</code>
+        </div>
+    ))}
+
+    <h2>Rodzaje tekstu</h2>
+    {textTypes.map(({ group, classes }) => (
+        <div class="theme-palette-group">
+            <h3>{group}</h3>
+            {classes.map((className) => (
+                <div class="theme-palette-text">
+                    <code>{className} — {utilityInfo(className)}</code>
+                    <p class={className}>Akademia Oohs n Woosh</p>
+                </div>
+            ))}
+        </div>
+    ))}
+
+    <h2>Wielkości czcionek Tailwinda</h2>
+    {tailwindSizes.map((className) => (
+        <div class="theme-palette-text">
+            <code>{className}</code>
+            <p class={className}>Zażółć gęślą jaźń</p>
+        </div>
+    ))}
+</section>
+
+<style>
+    .theme-palette {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        padding: 2rem;
+    }
+
+    .theme-palette-group h3 {
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+    }
+
+    .theme-palette-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .theme-palette-swatch {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        width: 8rem;
+        font-size: 0.75rem;
+    }
+
+    .theme-palette-color {
+        height: 4rem;
+        border-radius: 0.5rem;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .theme-palette-font {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .theme-palette-font p {
+        font-size: 1.5rem;
+    }
+
+    .theme-palette-font code,
+    .theme-palette-text code {
+        font-size: 0.75rem;
+        opacity: 0.7;
+    }
+
+    .theme-palette-text {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        margin-bottom: 1rem;
+    }
+</style>

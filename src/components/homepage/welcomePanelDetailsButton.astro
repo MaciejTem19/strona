@@ -1,0 +1,76 @@
+---
+import GradientButton from "../global/gradientButton.astro";
+
+export interface Props {
+    anchorId: string
+}
+
+const { anchorId } = Astro.props;
+
+---
+
+<!-- Własna klasa welcome-details-button — przy wspólnej welcome-gradient-button skrypt WelcomePanelButton
+     łapał ten guzik zamiast swojego (querySelector bierze pierwszy w DOM) i podmieniał mu tekst -->
+<!-- display: contents — wrapper niesie tylko data-anchor (GradientButton nie przekazuje własnych atrybutów), nie zmienia układu -->
+<div class="welcome-details-wrapper contents" data-anchor={anchorId}>
+<GradientButton
+   gradientFrom="var(--color-primary-400)"
+   gradientTo="var(--color-primary-600)"
+   hoverGradientFrom="var(--color-primary-700)"
+   hoverGradientTo="var(--color-primary-500)"
+   classses="welcome-details-button"
+>
+    Szczegóły
+</GradientButton>
+</div>
+
+
+<style >
+    /* :global, bo <button> renderuje się wewnątrz GradientButton i scoped styl by go nie złapał */
+    :global(.welcome-details-button) {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        height: fit-content;
+        padding: 0.75rem 1.75rem;
+        margin-right: 2rem;
+        border-radius: 1.5rem;
+        /* Obrys w ciemniejszym odcieniu gradientu, z odstępem — guzik odcina się od jasnego tła panelu */
+        outline: 2px solid var(--color-primary-800);
+        outline-offset: 3px;
+
+        color: var(--color-white);
+        font-size: var(--text-3xl);
+        font-weight: 700;
+        white-space: nowrap;
+    }
+</style>
+
+
+<!--
+    Przewijanie do sekcji — zakomentowane, bo sekcji jeszcze nie ma na stronie (secondButtonAnchor w texts.ts jest pusty).
+    Po dodaniu sekcji wystarczy wpisać ich id do secondButtonAnchor i odkomentować skrypt.
+
+<script>
+    import { WELCOME_PANEL_CONTENTS } from "./texts";
+    import { PANEL_ENTER_EVENT, type PanelEventDetail } from "./panelEvents";
+
+    const wrapper = document.querySelector<HTMLElement>(".welcome-details-wrapper");
+    const button = wrapper?.querySelector<HTMLButtonElement>(".welcome-details-button");
+
+    if (wrapper && button) {
+        //Każdy panel prowadzi do innej sekcji — przy wejściu nowego panelu podmieniamy kotwicę
+        document.addEventListener(PANEL_ENTER_EVENT, (event) => {
+            const { index } = (event as CustomEvent<PanelEventDetail>).detail;
+            wrapper.dataset.anchor = WELCOME_PANEL_CONTENTS[index].secondButtonAnchor;
+        });
+
+        button.addEventListener("click", () => {
+            const anchor = wrapper.dataset.anchor;
+            //getElementById, nie querySelector — id nie musi być poprawnym selektorem CSS
+            const section = anchor ? document.getElementById(anchor) : null;
+            section?.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+    }
+</script>
+-->

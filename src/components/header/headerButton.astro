@@ -1,0 +1,121 @@
+---
+
+export interface Props {
+    text: string,
+    url: string
+}
+
+const {text, url} = Astro.props;
+
+const currentUrl = Astro.url.pathname;
+const isSite = currentUrl === url
+
+---
+
+<!-- data-active — guzik aktualnej strony: stały kolor i bar, bez animacji hovera -->
+<div class="header-button-wraper p-2 bg-white" data-active={isSite ? "" : undefined}>
+    <button id=`header-button-${url}` class="header-button text-content">
+        {text}
+    </button>
+    <div class="header-button-bar" id=`header-button-${url}`/>
+</div>
+
+
+<script>
+import { undefined } from "astro:schema";
+import gsap from "gsap";
+
+    //GSAP nie przelicza var() — kolory bierzemy z policzonych zmiennych palety
+    const rootStyle = getComputedStyle(document.documentElement);
+    const HOVER_COLOR = rootStyle.getPropertyValue("--color-secondary-800").trim();
+    const IDLE_COLOR = rootStyle.getPropertyValue("--color-secondary-600").trim();
+    const HOVER_DURATION = 0.2;
+
+    //dodaj onClicka
+    function onHover(button: HTMLButtonElement, bar?: HTMLDivElement | null) {
+        gsap.to(button, {
+            color: HOVER_COLOR,
+            duration: HOVER_DURATION,
+            overwrite: "auto",
+        });
+
+        if (bar) {
+
+            gsap.to(bar, {
+                width: "100%",
+                duration: HOVER_DURATION * 2,
+                overwrite: "auto"
+            })
+        }
+
+    }
+
+    function onEndHover(button: HTMLButtonElement, bar?: HTMLDivElement | null) {
+        gsap.to(button, {
+            color: IDLE_COLOR,
+            duration: HOVER_DURATION,
+            overwrite: "auto",
+        });
+
+        if (bar) {
+            gsap.to(bar, {
+                width: "0px",
+                duration: HOVER_DURATION * 2,
+                overwrite: "auto"
+            })
+        }
+    }
+
+    //Hover na całym wrapperze, nie tylko na tekście — padding wokół napisu też reaguje na kursor.
+    //Element zamiast selektora z id — url typu "/" albo "/kursy" daje id, którego nie da się użyć w selektorze bez escapowania
+    document.querySelectorAll<HTMLElement>(".header-button-wraper").forEach((wrapper) => {
+        const button = wrapper.querySelector<HTMLButtonElement>(".header-button");
+        //Guzik aktualnej strony ma kolor i bar na stałe z CSS — hover by je nadpisał, a zjechanie kursorem schowało bar
+        if (!button || wrapper.hasAttribute("data-active")) return;
+        const bar = wrapper.querySelector<HTMLDivElement>(".header-button-bar");
+        wrapper.addEventListener("pointerenter", () => onHover(button, bar));
+        wrapper.addEventListener("pointerleave", () => onEndHover(button, bar));
+    });
+
+</script>
+
+<style>
+    /* Odstęp od przedziałek po obu stronach guzika */
+    .header-button-wraper {
+        margin: 0 1rem;
+        /* Łapka na całym obszarze guzika, razem z paddingiem */
+        cursor: pointer;
+        justify-items: center;
+    }
+    
+    .header-button {
+        color: var(--color-secondary-600);
+        /* Wersalikami z lekkim rozstrzeleniem dla czytelności */
+        font-size: 1.25rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        cursor: pointer;
+    }
+    .header-button-bar {
+        background-color: var(--color-tetriary-500);
+        height: 2px;
+        border-radius: 10px;
+        /* width: 10px; */
+        z-index: 10;
+    }
+
+    /* Aktualna strona — tekst zawsze secondary-800, a pod nim pełny bar w dark-800 zamiast tertiary */
+    .header-button-wraper[data-active] .header-button {
+        color: var(--color-secondary-800);
+    }
+    /* Na aktualnej stronie guzik nigdzie nie prowadzi — zwykły kursor zamiast łapki */
+    .header-button-wraper[data-active],
+    .header-button-wraper[data-active] .header-button {
+        cursor: default;
+    }
+    .header-button-wraper[data-active] .header-button-bar {
+        width: 100%;
+        background-color: var(--color-dark-800);
+    }
+</style>

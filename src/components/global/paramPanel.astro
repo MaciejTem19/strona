@@ -1,0 +1,65 @@
+---
+//Panel z zaokrąglonymi rogami: tytuł z propsa, treść przez slot.
+//Nie na całą szerokość — przyklejony do lewej albo prawej strony rodzica (prop side, domyślnie lewa).
+//
+//Przykład użycia:
+//
+//  ---
+//  import ParamPanel from "../global/paramPanel.astro";
+//  ---
+//  <ParamPanel title="Nasza filozofia">
+//      <p>Uczymy groomingu, ale przede wszystkim uczymy ludzi.</p>
+//  </ParamPanel>
+//  <ParamPanel title="Zaproszenie" side="right">
+//      <p>Zapraszamy do Akademii Oohs&Woofs.</p>
+//  </ParamPanel>
+
+export interface Props {
+    title: string
+    side?: "left" | "right"
+    class?: string
+}
+
+const { title, side = "left", class: className = "" } = Astro.props;
+---
+
+<section class:list={["param-panel elevation", `param-panel--${side}`, className]}>
+    <h2 class="param-panel-title text-header2">{title}</h2>
+    <div class="param-panel-content text-content">
+        <slot />
+    </div>
+</section>
+
+
+<style>
+    .param-panel {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        width: 100%;
+        max-width: 48rem;
+        padding: 2rem 2.5rem;
+        border-radius: 2rem;
+    }
+    /* Auto-margines z drugiej strony dopycha panel do swojej krawędzi */
+    .param-panel--left {
+        margin-right: auto;
+    }
+    .param-panel--right {
+        margin-left: auto;
+    }
+    .param-panel-title {
+        text-wrap: balance;
+    }
+    /* Odstępy między akapitami i listami ze slotu — :global, bo to treść rodzica, scoped styl by jej nie złapał */
+    .param-panel-content {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        text-wrap: pretty;
+    }
+    .param-panel-content :global(ul) {
+        list-style: disc;
+        padding-left: 1.5rem;
+    }
+</style>

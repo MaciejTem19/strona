@@ -1,0 +1,59 @@
+---
+import "../styles/tailwind.css";
+import ThemePalette from "../components/global/themePalette.astro";
+import PaletteExamples from "../components/global/paletteExamples.astro";
+import PawDivider from "../components/global/pawDevider.astro";
+---
+
+<html lang="pl">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width" />
+		<title>Test komponentów</title>
+	</head>
+	<body>
+		<h1 class="header-warning font-bold color-red flex w-screen text-3xl">
+		    Uwaga: Podstrona została stworzona jedynie do testowania i przedstawiania komponentów znajdujących się na stronie. Ta strona nie zostana dołączona do finalnej wersji projektu.
+		</h1>
+		<ThemePalette />
+		<PaletteExamples />
+
+		<!-- Przedziałka z łapą — guziki odpalają każdą z funkcji animacji -->
+		<section class="flex flex-col gap-6 p-10">
+			<h2 class="text-header2">PawDivider</h2>
+			<PawDivider class="paw-divider-test" />
+			<div class="flex gap-3">
+				<button type="button" class="paw-test-button" data-paw-action="enter">enterPawDivider</button>
+				<button type="button" class="paw-test-button" data-paw-action="leave">leavePawDivider</button>
+				<button type="button" class="paw-test-button" data-paw-action="show">showPawDivider</button>
+			</div>
+		</section>
+	</body>
+</html>
+<style>
+    .header-warning {
+        color: red;
+    }
+    .paw-test-button {
+        padding: 0.4rem 1rem;
+        border: 2px solid var(--color-dark-800);
+        border-radius: 999px;
+        font-family: var(--font-mono);
+        cursor: pointer;
+    }
+
+</style>
+
+
+<script>
+    import { enterPawDivider, leavePawDivider, showPawDivider } from "../components/global/pawDividerAnimations";
+
+    const PAW_ACTIONS = { enter: enterPawDivider, leave: leavePawDivider, show: showPawDivider };
+
+    const divider = document.querySelector(".paw-divider-test");
+
+    document.querySelectorAll<HTMLButtonElement>("[data-paw-action]").forEach((button) => {
+        const action = PAW_ACTIONS[button.dataset.pawAction as keyof typeof PAW_ACTIONS];
+        button.addEventListener("click", () => divider && action(divider));
+    });
+</script>

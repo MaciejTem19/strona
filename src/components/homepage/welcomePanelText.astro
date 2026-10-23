@@ -1,0 +1,162 @@
+---
+export interface Props {
+    title: string,
+    content: string,
+    id: string
+}
+
+const props: Props = Astro.props;
+
+//Maksymalna szerokość paramu w znakach (ch)
+const PARAM_MAX_WIDTH_CH = 82;
+const paramMaxWidth = `${PARAM_MAX_WIDTH_CH}ch`;
+
+---
+
+<div id={props.id} class="welcome-panel-text">
+    <h1 class="text-header1">
+        {props.title}
+    </h1>
+    <p class="text-content-lg">
+        {props.content}
+    </p>
+</div>
+
+
+<style define:vars={{ paramMaxWidth }}>
+    .welcome-panel-text {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+    }
+    .welcome-panel-text > h1 {
+        text-wrap: balance;
+        /* O ton jaśniej niż primary-800 z text-header1 */
+        color: var(--color-primary-700);
+    }
+    .welcome-panel-text > p {
+        font-size: 1.75rem;
+        /* O ton ciemniej niż dark-700 z text-content-lg */
+        color: var(--color-dark-800);
+        max-width: var(--paramMaxWidth);
+        text-wrap: pretty;
+    }
+</style>
+
+
+<script>
+
+    import gsap from "gsap";
+    import { SplitText } from "gsap/SplitText";
+    import { WELCOME_CONTENTS, WELCOME_PANEL_CONTENTS } from "./texts";
+    import { PANEL_ENTER_EVENT, PANEL_LEAVE_EVENT, dispatchPanelEvent, type PanelEventDetail } from "./panelEvents";
+
+    gsap.registerPlugin(SplitText)
+
+    let header: any;
+    let param: any;
+
+    //Wejście linii paramu: przesuw w bok trwa dłużej, opacity dochodzi do 1 szybciej (s)
+    const PARAM_ENTER_MOVE_DURATION = 0.5
+    const PARAM_ENTER_FADE_DURATION = 0.25
+
+    let prevHeaderAnimation: gsap.core.Timeline | null;
+    let prevParamAnimation: gsap.core.Timeline | null;
+
+    export function setDisplayedPanel(id: string) {
+        
+    }
+
+    function animateEnter(id: string, paramid: number) {
+        
+        setPanelText(id, WELCOME_PANEL_CONTENTS[paramid].title, WELCOME_PANEL_CONTENTS[paramid].param);
+
+        //Elementy, nie selektory — przejście z timera woła to z callbacku tweena z useGSAP, a GSAP szuka wtedy selektorów
+        //tylko w scope tamtego kontekstu (kropki), więc SplitText nic nie znajdował i wejście się nie animowało
+        header = SplitText.create(document.querySelector(`#${id} > h1`), {type: "chars"})
+        param = SplitText.create(document.querySelector(`#${id} > p`), {type: "lines"})
+        
+        prevHeaderAnimation?.kill()
+        prevParamAnimation?.kill()
+
+        //Nowy timeline przy każdym wejściu — kill() w animateLeave zabija go na stałe, więc wspólnego nie dałoby się użyć drugi raz
+        const timeline = gsap.timeline();
+
+        prevHeaderAnimation = timeline.from(header.chars,
+            {
+                opacity: 0,
+                stagger: 0.03,
+                y: "+=10",
+                onComplete: () => {
+                    prevHeaderAnimation = null
+                }
+            }
+        )
+        //Przesuw i pojawianie się linii w osobnych tweenach — opacity rośnie szybciej niż trwa przesuw
+        prevParamAnimation = timeline.from(param.lines, {
+            stagger: 0.1,
+            x: "-=10",
+            duration: PARAM_ENTER_MOVE_DURATION,
+            delay: 0.3,
+            onComplete: () => {
+                prevParamAnimation = null;
+            }
+        
+        })
+        //"<" — startuje razem z przesuwem (już po jego delay)
+        timeline.from(param.lines, {
+            opacity: 0,
+            stagger: 0.1,
+            duration: PARAM_ENTER_FADE_DURATION,
+        }, "<")
+    }
+    animateEnter("panel-1", 0);
+
+    function animateLeave(onComplete?: () => void) {
+        prevHeaderAnimation?.kill()
+        prevParamAnimation?.kill()
+
+        //Osobny timeline — wspólny mógł zostać zabity przez kill() powyżej
+        const leaveTimeline = gsap.timeline({ onComplete });
+
+        //Tekst i nagłówek znikają jednocześnie — "<" startuje drugi tween razem z pierwszym
+        leaveTimeline.to(param.lines, {
+            opacity: 0,
+            stagger: 0.05,
+            x: "+=10",
+            duration: 0.3,
+        })
+        leaveTimeline.to(header.chars, {
+            opacity: 0,
+            stagger: 0.02,
+            y: "-=10",
+            duration: 0.3,
+            delay: 0
+        }, "<")
+
+        return leaveTimeline;
+    }
+
+    function setPanelText(id: string, title: string, content: string) {
+        //SplitText rozbił tekst na divy — najpierw przywracamy oryginał, inaczej nowy tekst wejdzie w stare znaki/linie
+        header?.revert();
+        param?.revert();
+
+        const titleElement = document.querySelector<HTMLHeadingElement>(`#${id} > h1`);
+        const contentElement = document.querySelector<HTMLParagraphElement>(`#${id} > p`);
+
+        if (titleElement) titleElement.textContent = title;
+        if (contentElement) contentElement.textContent = content;
+    }
+
+    //Guziki proszą o zmianę panelu — chowamy bieżący, wstawiamy nowy i dajemy znać, że już wjeżdża
+    document.addEventListener(PANEL_LEAVE_EVENT, (event) => {
+        const { index } = (event as CustomEvent<PanelEventDetail>).detail;
+
+        animateLeave(() => {
+            animateEnter("panel-1", index);
+            dispatchPanelEvent(PANEL_ENTER_EVENT, index);
+        });
+    });
+
+</script>

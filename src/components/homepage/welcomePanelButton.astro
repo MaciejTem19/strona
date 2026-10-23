@@ -1,0 +1,88 @@
+---
+import GradientButton from "../global/gradientButton.astro";
+
+export interface Props {
+    title: string
+    message: string
+}
+
+const {message, title} = Astro.props;
+
+---
+
+<GradientButton
+   gradientFrom="var(--color-secondary-400)"
+   gradientTo="var(--color-tetriary-500)"
+   hoverGradientFrom="var(--color-tetriary-600)"
+   hoverGradientTo="var(--color-secondary-600)"
+   classses="welcome-gradient-button" 
+>
+    <span class="welcome-button-label">{message}</span>
+</GradientButton>
+
+
+<style >
+    /* :global, bo <button> renderuje się wewnątrz GradientButton i scoped styl by go nie złapał */
+    :global(.welcome-gradient-button) {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        height: fit-content;
+        padding: 1rem 2.5rem;
+        margin-right: 2rem;
+        /* Pill — promień większy niż połowa wysokości daje w pełni zaokrąglone boki */
+        border-radius: 999px;
+        border: none;
+        /* Wyraźny cień — guzik "unosi się" nad panelem i od razu łapie wzrok */
+        box-shadow: 0 10px 24px -6px rgba(0, 0, 0, 0.4);
+
+        color: var(--color-white);
+        font-size: 2.1rem;
+        font-weight: 700;
+
+        /* Tekst w jednej linii, żeby podczas animacji szerokości nie łamał się na dwie */
+        white-space: nowrap;
+        overflow: hidden;
+    }
+</style>
+
+
+<script>
+    import gsap from "gsap";
+    import { WELCOME_PANEL_CONTENTS } from "./texts";
+    import { PANEL_ENTER_EVENT, PANEL_LEAVE_EVENT, type PanelEventDetail } from "./panelEvents";
+
+    const BUTTON_RESIZE_DURATION = 0.4;
+    const LABEL_FADE_DURATION = 0.2;
+    //Stary tekst gaśnie dopiero pod koniec wyjścia panelu, żeby guzik nie stał długo pusty przed nowym tekstem
+    const LABEL_FADE_OUT_DELAY = 0.4;
+
+    const button = document.querySelector<HTMLButtonElement>(".welcome-gradient-button");
+    const label = button?.querySelector<HTMLSpanElement>(".welcome-button-label");
+
+    if (button && label) {
+        //Tekst gaśnie razem z wyjściem panelu
+        document.addEventListener(PANEL_LEAVE_EVENT, () => {
+            gsap.to(label, { autoAlpha: 0, duration: LABEL_FADE_DURATION, delay: LABEL_FADE_OUT_DELAY, overwrite: "auto" });
+        });
+
+        //Nowy panel wjeżdża — podmieniamy tekst i płynnie przechodzimy ze starej szerokości do nowej
+        document.addEventListener(PANEL_ENTER_EVENT, (event) => {
+            const { index } = (event as CustomEvent<PanelEventDetail>).detail;
+
+            //Bieżąca szerokość, też w trakcie niedokończonej animacji — od niej startujemy
+            const fromWidth = button.offsetWidth;
+            gsap.killTweensOf(button, "width");
+            button.style.width = "";
+
+            label.textContent = WELCOME_PANEL_CONTENTS[index].buttonText;
+            const toWidth = button.offsetWidth;
+
+            gsap.fromTo(button,
+                { width: fromWidth },
+                { width: toWidth, duration: BUTTON_RESIZE_DURATION, ease: "power3.inOut", clearProps: "width" }
+            );
+            gsap.to(label, { autoAlpha: 1, duration: LABEL_FADE_DURATION, delay: BUTTON_RESIZE_DURATION / 2, overwrite: "auto" });
+        });
+    }
+</script>

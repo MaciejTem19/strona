@@ -1,0 +1,29 @@
+---
+
+export interface Props {
+    text: string
+}
+
+const {text} = Astro.props;
+---
+
+
+<div id="additional-text" class="relative w-fit max-w-sm mx-auto border-dotted border-2 border-secondary-700 p-3 bg-secondary-200">
+    <!-- Kość z public/svgs/bone.svg — wypełnienie i obrys w currentColor, więc kolor bierze z klasy text-* (ten sam co ramka) -->
+    <svg class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 rotate-45 w-8 h-8 text-secondary-700" viewBox="0 0 100 100" aria-hidden="true">
+        <path transform="rotate(-35 50 50)" fill="currentColor" stroke="currentColor" stroke-width="3" stroke-linejoin="round"
+              d="M36.85 41 L63.15 41 A13 13 0 1 1 82.93 50 A13 13 0 1 1 63.15 59 L36.85 59 A13 13 0 1 1 17.07 50 A13 13 0 1 1 36.85 41 Z"/>
+    </svg>
+    <div id="additional-text-text" class="text-secondary-700 text-center text-[1.375rem]">
+        {text}
+    </div>
+</div>
+
+
+<style>
+    
+    #additional-text {
+        border-radius: 1rem;
+    }
+
+</style>

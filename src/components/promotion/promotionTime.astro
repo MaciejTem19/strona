@@ -1,0 +1,211 @@
+---
+import { undefined } from "astro:schema";
+import { PROMOTION_DATE_END, getTimeLeft, formatTimeUnit } from "./promotionTime";
+import { OFFERT_ADD, OFFERT_TEXT } from "../homepage/texts";
+import GradientButton from "../global/gradientButton.astro";
+
+//Dokąd prowadzi klik w pasek (i guzik w nim)
+const PROMOTION_URL = "/kursy";
+
+const CurrentDate = Date.now();
+
+const span = PROMOTION_DATE_END - CurrentDate;
+
+//Stan z chwili builda — zaraz po załadowaniu strony nadpisuje go timer w <script>
+const timeLeft = getTimeLeft(PROMOTION_DATE_END, CurrentDate);
+---
+
+
+<!-- Pasek promocji w jednej linii: oferta z rabatem | odliczanie z podpisami pod liczbami | guzik -->
+<div class="promotion-time" id="promotion-timer" data-href={PROMOTION_URL}>
+    <div class="promotion-offer">
+        <span class="promotion-title">{OFFERT_TEXT}</span>
+        <span class="promotion-discount">{OFFERT_ADD}</span>
+    </div>
+
+    <span class="promotion-divider" />
+
+    <div class="promotion-countdown">
+        <div class="promotion-time-unit">
+            <span data-unit="days">{timeLeft && formatTimeUnit(timeLeft.days)}</span>
+            <span class="promotion-time-label">dni</span>
+        </div>
+        <div class="promotion-time-unit">
+            <span data-unit="hours">{timeLeft && formatTimeUnit(timeLeft.hours)}</span>
+            <span class="promotion-time-label">godz</span>
+        </div>
+        <div class="promotion-time-unit">
+            <span data-unit="minutes">{timeLeft && formatTimeUnit(timeLeft.minutes)}</span>
+            <span class="promotion-time-label">min</span>
+        </div>
+        <div class="promotion-time-unit">
+            <span data-unit="seconds">{timeLeft && formatTimeUnit(timeLeft.seconds)}</span>
+            <span class="promotion-time-label">sek</span>
+        </div>
+    </div>
+
+    <!-- Odcienie primary jak w guziku "Szczegóły" (WelcomePanelDetailsButton), tylko o 2 tony ciemniejsze — biały tekst lepiej się czyta. Klik w guzik wypływa do paska, a ten przenosi na PROMOTION_URL -->
+    <GradientButton
+       gradientFrom="var(--color-primary-600)"
+       gradientTo="var(--color-primary-800)"
+       hoverGradientFrom="var(--color-primary-900)"
+       hoverGradientTo="var(--color-primary-700)"
+       classses="promotion-button"
+    >
+        Sprawdź ofertę
+    </GradientButton>
+</div>
+
+
+
+<script>
+    import { PROMOTION_DATE_END, getTimeLeft, formatTimeUnit, type TimeLeft } from "./promotionTime";
+    import gsap from "gsap";
+
+    //Co ile ms sprawdzamy pozostały czas — często, żeby zmiana sekundy nie spóźniała się widocznie
+    const TIMER_INTERVAL = 50  
+
+    function startTimer() {
+        const timers = document.querySelectorAll<HTMLDivElement>(".promotion-time")
+
+        const intervalId = setInterval(() => {
+            const timeLeft = getTimeLeft(PROMOTION_DATE_END, Date.now())
+
+            timers.forEach((timer) => setTimer(timer, timeLeft))
+
+            //Po końcu promocji nie ma już czego odliczać
+            if (PROMOTION_DATE_END <= Date.now())
+                clearInterval(intervalId)
+        }, TIMER_INTERVAL)
+    }
+
+    function setTimer(timer: HTMLDivElement, timeLeft: TimeLeft | null) {
+        if (!timeLeft)
+            return
+
+        for (const unit of ["days", "hours", "minutes", "seconds"] as const) {
+            const element = timer.querySelector<HTMLSpanElement>(`[data-unit="${unit}"]`)
+            if (element)
+                element.textContent = formatTimeUnit(timeLeft[unit])
+        }
+    }
+
+    startTimer()
+
+    //Po ilu sekundach od załadowania pasek macha, żeby zwrócić na siebie uwagę
+    const WAVE_DELAY = 3
+    //Co ile sekund pasek macha ponownie
+    const WAVE_INTERVAL = 10
+    //Wychylenie przy machaniu (stopnie)
+    const WAVE_ANGLE = 2.5
+
+    //Machanie lewo-prawo: wychylenia coraz mniejsze, na końcu powrót do zera — powtarzane w nieskończoność co WAVE_INTERVAL
+    gsap.timeline({ delay: WAVE_DELAY, repeat: -1, repeatDelay: WAVE_INTERVAL })
+        .to(".promotion-time", { rotation: -WAVE_ANGLE, duration: 0.12, ease: "power1.out" })
+        .to(".promotion-time", { rotation: WAVE_ANGLE, duration: 0.18, ease: "sine.inOut" })
+        .to(".promotion-time", { rotation: -WAVE_ANGLE * 0.6, duration: 0.16, ease: "sine.inOut" })
+        .to(".promotion-time", { rotation: WAVE_ANGLE * 0.3, duration: 0.14, ease: "sine.inOut" })
+        .to(".promotion-time", { rotation: 0, duration: 0.12, ease: "power1.in" })
+
+    //Cały pasek klikalny (razem z guzikiem "Sprawdź ofertę", którego klik tu wypływa) — adres z data-href
+    document.querySelectorAll<HTMLDivElement>(".promotion-time").forEach((panel) => {
+        panel.addEventListener("click", () => {
+            if (panel.dataset.href)
+                window.location.href = panel.dataset.href
+        })
+    })
+
+</script>
+
+
+<style>
+    #promotion-timer {
+        display: flex;
+        align-items: center;
+        gap: 1.75rem;
+        padding: 0.75rem 0.75rem 0.75rem 2.25rem;
+        white-space: nowrap;
+
+        border-radius: 999px;
+        /* Matowa szyba jak w panelu tekstu (#content-message) — półprzezroczyste tło + rozmyte zdjęcie pod spodem */
+        background-color: color-mix(in oklab, var(--color-light-50) 70%, transparent);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        /* Ta sama obwódka i cień co elevation */
+        border: 1px solid color-mix(in oklab, var(--color-dark-900) 10%, transparent);
+        box-shadow: 0 10px 30px -18px color-mix(in oklab, var(--color-dark-950) 55%, transparent);
+
+        font-family: var(--font-text);
+        color: var(--color-dark-800);
+        cursor: pointer;
+    }
+
+    /* Oferta: mały podpis nad dużym rabatem */
+    .promotion-offer {
+        display: flex;
+        flex-direction: column;
+        line-height: 1;
+    }
+    .promotion-title {
+        font-size: 0.95rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--color-primary-700);
+    }
+    .promotion-discount {
+        /* Rabat na środku pod podpisem oferty */
+        align-self: center;
+        margin-top: 0.25rem;
+        font-family: var(--font-header);
+        font-size: 2.75rem;
+        font-weight: 800;
+        color: var(--color-primary-800);
+    }
+
+    /* Pionowa kreska oddzielająca ofertę od odliczania */
+    .promotion-divider {
+        align-self: stretch;
+        width: 1px;
+        margin: 0.5rem 0;
+        background-color: color-mix(in oklab, var(--color-dark-900) 15%, transparent);
+    }
+
+    .promotion-countdown {
+        display: flex;
+        gap: 1.4rem;
+    }
+    /* Liczba z podpisem pod spodem */
+    .promotion-time-unit {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-width: 2.75rem;
+        font-size: 2rem;
+        font-weight: 700;
+        line-height: 1;
+        /* Cyfry równej szerokości — timer nie skacze przy zmianie sekund */
+        font-variant-numeric: tabular-nums;
+    }
+    .promotion-time-label {
+        margin-top: 0.4rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--color-dark-500);
+    }
+
+    /* :global, bo <button> renderuje się wewnątrz GradientButton i scoped styl by go nie złapał */
+    :global(.promotion-button) {
+        margin-left: 0.25rem;
+        padding: 0.9rem 1.6rem;
+        font-size: 1.35rem;
+        border: none;
+        border-radius: 999px;
+        font-family: var(--font-button);
+        font-weight: 600;
+        color: var(--color-white);
+        white-space: nowrap;
+    }
+</style>

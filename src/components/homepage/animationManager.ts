@@ -1,0 +1,6 @@
+
+
+
+function setScene(id: string) {
+    ;
+}

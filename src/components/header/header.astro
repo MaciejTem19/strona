@@ -1,0 +1,78 @@
+---
+import { HEADER_PANEL_BUTTONS } from '../homepage/texts';
+import HeaderButton from './headerButton.astro';
+import HeaderIconPanel from './headerIconPanel.astro';
+
+
+export interface Props {
+    text: string,
+    url: string
+}
+
+const { text, url } = Astro.props;
+const content = HEADER_PANEL_BUTTONS;
+---
+
+<nav>
+    <!-- Logo bez linku; margin-right: auto w stylach spycha guziki do prawej -->
+    <!-- Nazwa salonu obok logo, wyśrodkowana w pionie względem niego -->
+    <div class="nav-logo pl-16 py-2">
+        <img src="/logo.png" alt="Logo akademii" />
+        <span class="nav-logo-name">Oohs &amp; Woofs</span>
+    </div>
+    <!-- Padding tylko na panelu z guzikami — logo dochodzi do krawędzi headera -->
+    <div class="nav-buttons py-4 px-16">
+        {content.map((el, index) => (
+            <>
+                {index > 0 && <span class="nav-separator" aria-hidden="true" />}
+                <HeaderButton text={el.text} url={el.url}/>
+            </>
+        ))}
+    </div>
+    <HeaderIconPanel />
+</nav>
+
+
+<style>
+    nav {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+
+        /* Cień tylko pod spodem (ujemny spread chowa go po bokach); relative + z-index, żeby leżał nad panelem poniżej, a nie pod jego tłem */
+        box-shadow: 0 8px 18px -4px rgba(0, 0, 0, 0.35);
+        position: relative;
+        z-index: 10;
+    }
+    .nav-buttons {
+        display: flex;
+        align-items: center;
+    }
+    .nav-logo {
+        margin-right: auto;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    .nav-logo-name {
+        font-size: 2.25rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+        color: var(--color-dark-800);
+        white-space: nowrap;
+    }
+    .nav-logo img {
+        height: 5.5rem;
+        width: auto;
+    }
+    /* Pionowa kreska między guzikami */
+    .nav-separator {
+        /* flex-shrink: 0 — inaczej 1px kreska mogła się ścisnąć do ułamka piksela i zniknąć */
+        flex-shrink: 0;
+        width: 1px;
+        height: 1.5em;
+        background-color: var(--color-dark-300);
+    }
+</style>

@@ -1,0 +1,154 @@
+---
+import { Icon } from 'astro-icon/components';
+
+const ICON_INSTA_MESSAGE = "oofswoohsinsta.67"
+const ICON_FB_MESSAGE = "super.profil.1123"
+const ICON_TELEPHONE_MESSAGE = "tel: +48 532 502 350"
+
+---
+<!-- Każda ikona z barem pod spodem — wysuwa się przy hoverze jak w guzikach navu -->
+<div id="header-icon-panel">
+    <span class="header-icon" id="header-icon-fb">
+        <Icon name="simple-icons:facebook" />
+        <span class="header-icon-bar" />
+    </span>
+    <span class="header-icon" id="header-icon-insta">
+        <Icon name="simple-icons:instagram" />
+        <span class="header-icon-bar" />
+    </span>
+    <span class="header-icon" id="header-icon-phone">
+        <Icon name="lucide:phone" />
+        <span class="header-icon-bar" />
+    </span>
+</div>
+<!-- Zewnętrzny div pozycjonuje Popper, wewnętrzny animuje GSAP — Popper nadpisuje transform swojego elementu -->
+<div id="header-popper-fb" class="header-popper" role="tooltip">
+    <div class="header-popper-body">{ICON_FB_MESSAGE}</div>
+</div>
+<div id="header-popper-insta" class="header-popper" role="tooltip">
+    <div class="header-popper-body">{ICON_INSTA_MESSAGE}</div>
+</div>
+<div id="header-popper-phone" class="header-popper" role="tooltip">
+    <div class="header-popper-body">{ICON_TELEPHONE_MESSAGE}</div>
+</div>
+
+<style>
+    /* Ikony w rzędzie po prawej stronie headera */
+    #header-icon-panel {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex-shrink: 0;
+        padding: 0 4rem 0 1.5rem;
+    }
+
+    /* :global, bo <svg> renderuje się w komponencie Icon i scoped styl by go nie złapał */
+    #header-icon-panel :global(svg) {
+        width: 1.75rem;
+        height: 1.75rem;
+
+        /* simple-icons i lucide rysują currentColor — kolor ikony bierze się z color */
+        color: var(--color-secondary-700);
+        transition: color 0.2s ease;
+    }
+
+    /* Ikona nad barem, wyśrodkowana — tak jak tekst i bar w HeaderButton.
+       Ten sam pudełkowy układ co guzik: padding 0.5rem (p-2) i linia tekstu 1.25rem × 1.5 = 1.875rem nad barem
+       (ikona 1.75rem + 0.125rem odstępu) — dzięki temu bary ikon leżą na tej samej wysokości co bary guzików */
+    .header-icon {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.125rem;
+        padding: 0.5rem;
+        cursor: pointer;
+    }
+    /* Ten sam bar co w guzikach navu: tertiary-500, 2px, rośnie od 0 do pełnej szerokości.
+       Hover w guzikach trwa 0.2s dla koloru i 2× dłużej dla baru — tu tak samo */
+    .header-icon-bar {
+        width: 0;
+        height: 2px;
+        border-radius: 10px;
+        background-color: var(--color-tetriary-500);
+        transition: width 0.4s ease;
+    }
+    /* Z #header-icon-panel na początku — inaczej selektor z id w regule bazowej wygrywał i kolor przy hoverze się nie zmieniał */
+    #header-icon-panel .header-icon:hover :global(svg) {
+        color: var(--color-secondary-900);
+    }
+    .header-icon:hover .header-icon-bar {
+        width: 100%;
+    }
+
+    /* Dymek Poppera — w markupie od początku, pozycję ustawia Popper */
+    .header-popper {
+        /* Absolutnie od początku — zanim Popper ustawi pozycję, dymek nie zajmuje miejsca w rzędzie navu */
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 50;
+        pointer-events: none;
+    }
+    /* Właściwy dymek — schowany na starcie, pokazuje go i powiększa GSAP */
+    .header-popper-body {
+        padding: 0.5rem 1rem;
+        border-radius: 0.75rem;
+        background-color: var(--color-dark-800);
+        color: var(--color-white);
+        font-family: var(--font-text);
+        font-size: 1.05rem;
+        font-weight: 500;
+        white-space: nowrap;
+
+        visibility: hidden;
+        opacity: 0;
+        /* Rośnie od strony ikony */
+        transform-origin: top center;
+    }
+    /* Gdy Popper odwróci dymek nad ikonę (za mało miejsca pod spodem) — rośnie od dołu */
+    .header-popper[data-popper-placement^="top"] .header-popper-body {
+        transform-origin: bottom center;
+    }
+
+</style>
+
+<script>
+    import {createPopper} from "@popperjs/core"
+    import gsap from "gsap"
+
+    const POPPER_DURATION = 0.25
+    //Skala, od której dymek rośnie przy pokazaniu i do której maleje przy chowaniu
+    const POPPER_HIDDEN_SCALE = 0.8
+
+    //Podpina dymek pod ikonę — Popper tworzony od razu przy starcie strony, hover tylko pokazuje i chowa dymek przez GSAP
+    function setupIconPopper(iconSelector: string, tooltipSelector: string) {
+        const icon = document.querySelector<HTMLSpanElement>(iconSelector)
+        const tooltip = document.querySelector<HTMLDivElement>(tooltipSelector)
+        const tooltipBody = tooltip?.querySelector<HTMLDivElement>(".header-popper-body")
+        if (!icon || !tooltip || !tooltipBody)
+            return
+
+        const popper = createPopper(icon, tooltip, {
+            placement: "bottom",
+            //Odstęp 8px od ikony
+            modifiers: [{ name: "offset", options: { offset: [0, 8] } }],
+        })
+
+        icon.addEventListener("mouseenter", () => {
+            //Przeliczenie pozycji przed pokazaniem — układ mógł się zmienić od startu (np. załadowane fonty)
+            popper.update()
+            //Start od małej skali tylko przy całkiem schowanym dymku — przy szybkim powrocie kursora rośnie od obecnej, bez skoku
+            if (gsap.getProperty(tooltipBody, "opacity") === 0)
+                gsap.set(tooltipBody, { scale: POPPER_HIDDEN_SCALE })
+            gsap.to(tooltipBody, { autoAlpha: 1, scale: 1, duration: POPPER_DURATION, ease: "back.out(2)", overwrite: "auto" })
+        })
+
+        icon.addEventListener("mouseleave", () => {
+            gsap.to(tooltipBody, { autoAlpha: 0, scale: POPPER_HIDDEN_SCALE, duration: POPPER_DURATION, ease: "power2.in", overwrite: "auto" })
+        })
+    }
+
+    setupIconPopper("#header-icon-fb", "#header-popper-fb")
+    setupIconPopper("#header-icon-insta", "#header-popper-insta")
+    setupIconPopper("#header-icon-phone", "#header-popper-phone")
+</script>

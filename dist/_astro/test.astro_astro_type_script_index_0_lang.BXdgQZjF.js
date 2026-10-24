@@ -1,0 +1,1 @@
+import{n as e,r as t,t as n}from"./pawDividerAnimations.C26R5cMi.js";var r={enter:n,leave:e,show:t},i=document.querySelector(`.paw-divider-test`);document.querySelectorAll(`[data-paw-action]`).forEach(e=>{let t=r[e.dataset.pawAction];e.addEventListener(`click`,()=>i&&t(i))});

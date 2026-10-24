@@ -17,7 +17,7 @@ const content = HEADER_PANEL_BUTTONS;
     <!-- Logo bez linku; margin-right: auto w stylach spycha guziki do prawej -->
     <!-- Nazwa salonu obok logo, wyśrodkowana w pionie względem niego -->
     <div class="nav-logo pl-16 py-2">
-        <img src="/logo.png" alt="Logo akademii" />
+        <img src={`${import.meta.env.BASE_URL}logo.png`} alt="Logo akademii" />
         <span class="nav-logo-name">Oohs &amp; Woofs</span>
     </div>
     <!-- Padding tylko na panelu z guzikami — logo dochodzi do krawędzi headera -->
@@ -40,7 +40,7 @@ const content = HEADER_PANEL_BUTTONS;
         align-items: center;
 
         /* Cień tylko pod spodem (ujemny spread chowa go po bokach); relative + z-index, żeby leżał nad panelem poniżej, a nie pod jego tłem */
-        box-shadow: 0 8px 18px -4px rgba(0, 0, 0, 0.35);
+        box-shadow: 0 6.4px 14.4px -3.2px rgba(0, 0, 0, 0.35);
         position: relative;
         z-index: 10;
     }

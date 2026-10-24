@@ -38,7 +38,7 @@ export interface Props {
     class?: string
 }
 
-const { playOnLoad = true, color = "var(--color-secondary-600)", size = 22, pawAnimation = true, class: className = "" } = Astro.props;
+const { playOnLoad = true, color = "var(--color-secondary-600)", size = 17.6, pawAnimation = true, class: className = "" } = Astro.props;
 
 const pawSize = typeof size === "number" ? `${size}px` : size;
 
@@ -62,7 +62,7 @@ const pawSize = typeof size === "number" ? `${size}px` : size;
     }
 
     /* Kreski wygaszone od zewnątrz; kolor z propa, więc gradient w CSS zamiast klas Tailwinda.
-       Grubość 1/11 łapy — przy domyślnych 22px wychodzi 2px jak wcześniej */
+       Grubość 1/11 łapy — przy domyślnych 17.6px wychodzi 1.6px jak wcześniej */
     .paw-divider-line {
         height: calc(var(--paw-size) / 11);
         --paw-line-color: color-mix(in oklab, var(--paw-color) 80%, transparent);

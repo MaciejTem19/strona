@@ -9,7 +9,7 @@ import icon from 'astro-icon';
 export default defineConfig({
   // GitHub Pages serves the project under /strona/
   site: 'https://maciejtem19.github.io',
-  base: '/strona',
+  base: '/strona/',
 
   integrations: [react(), icon()],
 

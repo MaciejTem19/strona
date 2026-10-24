@@ -85,6 +85,11 @@
 /* Reset — nic nie wystaje poza prawą krawędź strony i nie robi poziomego scrolla.
    clip zamiast hidden: hidden robi z html/body kontener scrolla i psuje position: sticky */
 @layer base {
+    /* Strona projektowana przy zoomie 80% — 80% bazowego rozmiaru skaluje wszystkie rem (cały Tailwind), żeby przy 100% wyglądała tak samo */
+    html {
+        font-size: 80%;
+    }
+
     html,
     body {
         overflow-x: clip;
@@ -242,19 +247,19 @@
 /* Uniesienie panelu — cienka obwódka + miękki cień pod spodem, trzy stopnie (panele na welcome page to wersja bazowa) */
 @utility elevation-lg {
     border: 1px solid color-mix(in oklab, var(--color-dark-900) 15%, transparent);
-    box-shadow: 0 16px 44px -20px color-mix(in oklab, var(--color-dark-950) 70%, transparent);
+    box-shadow: 0 12.8px 35.2px -16px color-mix(in oklab, var(--color-dark-950) 70%, transparent);
 }
 
 /* Panele mają własne jasne tło, żeby odcinały się od beżowego tła strony */
 @utility elevation {
     background-color: var(--color-light-50);
     border: 1px solid color-mix(in oklab, var(--color-dark-900) 10%, transparent);
-    box-shadow: 0 10px 30px -18px color-mix(in oklab, var(--color-dark-950) 55%, transparent);
+    box-shadow: 0 8px 24px -14.4px color-mix(in oklab, var(--color-dark-950) 55%, transparent);
 }
 
 @utility elevation-sm {
     border: 1px solid color-mix(in oklab, var(--color-dark-900) 7%, transparent);
-    box-shadow: 0 6px 18px -14px color-mix(in oklab, var(--color-dark-950) 40%, transparent);
+    box-shadow: 0 4.8px 14.4px -11.2px color-mix(in oklab, var(--color-dark-950) 40%, transparent);
 }
 
 /* Podpisy, etykiety, drobny druk */

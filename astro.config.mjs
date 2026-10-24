@@ -7,6 +7,10 @@ import icon from 'astro-icon';
 
 // https://astro.build/config
 export default defineConfig({
+  // GitHub Pages serves the project under /strona/
+  site: 'https://maciejtem19.github.io',
+  base: '/strona',
+
   integrations: [react(), icon()],
 
   vite: {

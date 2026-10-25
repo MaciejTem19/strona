@@ -1,0 +1,95 @@
+---
+import { CONTACT_CONTENT, FOOTER_CONTENT } from "../../texts/content";
+import FooterColumn from "./footerColumn.astro";
+
+const contactRows = CONTACT_CONTENT.rows.filter((row) => row.href);
+const footerNavItems = [
+  { label: "Do góry", target: "#hp-footer" },
+  { label: "Kontakt", target: "#hp-footer" },
+];
+
+const FOOTER_BG = "bg-dark-900";
+const FOOTER_MAIN_TEXT = "text-light";
+const FOOTER_SECONDARY_TEXT = "text-light/80";
+const FOOTER_ACCENT = "text-primary-300";
+const FOOTER_BOTTOM_TEXT = "text-dark-300";
+const FOOTER_HEADER = "text-light";
+
+---
+
+<footer id="hp-footer" class={`${FOOTER_BG} relative mt-10 w-full overflow-hidden shadow-[0_-12px_30px_rgba(0,0,0,0.18)]`}>
+    <div class="h-1.5 w-full bg-[#3d2c28]" aria-hidden="true"></div>
+    <div class="grid grid-cols-4 gap-10 pl-16 pr-16 pt-8 pb-7">
+        {/* Marka */}
+        <div class="flex flex-col gap-3">
+            <span class={`font-header text-[1.3rem] font-bold tracking-[0.08em] ${FOOTER_HEADER}`}>{FOOTER_CONTENT.brand}</span>
+            <p class={`m-0 text-[0.95rem] leading-relaxed ${FOOTER_SECONDARY_TEXT}`}>{FOOTER_CONTENT.tagline}</p>
+        </div>
+
+        {/* Sekcje strony */}
+        <FooterColumn heading={FOOTER_CONTENT.navHeading} titleClass={FOOTER_ACCENT}>
+            {footerNavItems.map((item) => (
+                <li>
+                    <button
+                        type="button"
+                        data-scroll-target={item.target}
+                        class={`panel-link border-0 bg-transparent p-0 font-inherit text-[0.95rem] ${FOOTER_MAIN_TEXT} transition-colors duration-200 hover:${FOOTER_ACCENT} hover:translate-x-0.5`}
+                    >
+                        {item.label}
+                    </button>
+                </li>
+            ))}
+        </FooterColumn>
+
+        {/* Kontakt */}
+        <FooterColumn heading={FOOTER_CONTENT.contactHeading} titleClass={FOOTER_ACCENT}>
+            {contactRows.map(({ label, value, href, Icon }) => (
+                <li>
+                    <a href={href} class={`flex items-start gap-3 text-[0.95rem] ${FOOTER_MAIN_TEXT} no-underline transition-colors duration-200 hover:${FOOTER_ACCENT}`}>
+                        <Icon size={16} class={`shrink-0 mt-0.5 ${FOOTER_ACCENT} drop-shadow-[0_0_8px_rgba(210,124,86,0.45)]`} aria-hidden="true" />
+                        {value}
+                    </a>
+                </li>
+            ))}
+        </FooterColumn>
+
+        {/* Sociale */}
+        <FooterColumn heading={FOOTER_CONTENT.socialsHeading} titleClass={FOOTER_ACCENT}>
+            {CONTACT_CONTENT.socials.map(({ name, href, Icon }) => (
+                <li>
+                    <a href={href} target="_blank" rel="noreferrer" class={`flex items-center gap-3 text-[0.95rem] ${FOOTER_MAIN_TEXT} no-underline transition-colors duration-200 hover:${FOOTER_ACCENT}`}>
+                        <Icon size={16} class={`shrink-0 ${FOOTER_ACCENT} drop-shadow-[0_0_8px_rgba(210,124,86,0.45)]`} aria-hidden="true" />
+                        {name}
+                    </a>
+                </li>
+            ))}
+        </FooterColumn>
+    </div>
+
+    {/* Dolny pasek — prawa autorskie po lewej, linki prawne po prawej */}
+    <div class={`flex items-center justify-between gap-6 border-t border-beige/15 bg-black/10 pl-16 pr-16 pt-4 pb-4 text-[0.85rem] ${FOOTER_BOTTOM_TEXT}`}>
+        <span class={FOOTER_BOTTOM_TEXT}>{FOOTER_CONTENT.copyright}</span>
+        <ul class="m-0 flex list-none gap-8 p-0">
+            {FOOTER_CONTENT.legalLinks.map((link) => (
+                <li>
+                    <a href={link.href} class={`${FOOTER_BOTTOM_TEXT} no-underline transition-colors duration-200 hover:${FOOTER_ACCENT}`}>{link.label}</a>
+                </li>
+            ))}
+        </ul>
+    </div>
+</footer>
+
+<script>
+  document.querySelectorAll(".panel-link").forEach((button) => {
+    button.addEventListener("click", (event) => {
+      const target = event.currentTarget;
+      if (!(target instanceof HTMLButtonElement)) return;
+
+      const selector = target.dataset.scrollTarget;
+      if (!selector) return;
+
+      const element = document.querySelector(selector);
+      element?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  });
+</script>

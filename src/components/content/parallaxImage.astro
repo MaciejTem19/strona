@@ -1,0 +1,104 @@
+---
+//Obrazek na całą szerokość, który przy scrollu przesuwa się wolniej niż strona (paralaksa).
+//ScrollTrigger wykrywa, ile pasa jest na ekranie, a GSAP przesuwa obrazek w pionie w takt scrolla (scrub).
+//Opcjonalna treść przez slot — leży nad obrazkiem. Z height="auto" wysokość wyznacza treść, a obrazek robi za tło sekcji.
+//
+//Przykład użycia:
+//
+//  ---
+//  import ParallaxImage from "../content/parallaxImage.astro";
+//  ---
+//  <ParallaxImage src="https://picsum.photos/id/1025/1920/1080" />
+//  <ParallaxImage src={`${import.meta.env.BASE_URL}zdjecie.jpg`} height="50vh" shift={20}>
+//      <h2 class="text-header1">Tekst na obrazku</h2>
+//  </ParallaxImage>
+//  <ParallaxImage src="https://picsum.photos/id/1025/1920/1080" height="auto" shift={10}>
+//      <ContentParam direction="left">...</ContentParam>
+//  </ParallaxImage>
+
+export interface Props {
+    src: string
+    alt?: string
+    //Wysokość pasa z obrazkiem — "auto", gdy obrazek ma być tłem treści ze slotu
+    height?: string
+    //Przesuw obrazka w % jego wysokości, w każdą stronę — im więcej, tym wolniej obrazek "jedzie" względem strony
+    shift?: number
+    class?: string
+}
+
+const { src, alt = "", height = "60vh", shift = 50, class: className = "" } = Astro.props;
+---
+
+<div class:list={["parallax-image", className]} style={{ "--parallax-height": height, "--parallax-shift": `${shift}%` }} data-parallax-shift={shift}>
+    <img class="parallax-image-img" src={src} alt={alt} loading="lazy" decoding="async" />
+    {Astro.slots.has("default") && (
+        <div class="parallax-image-content">
+            <slot />
+        </div>
+    )}
+</div>
+
+
+<style>
+    .parallax-image {
+        position: relative;
+        overflow: hidden;
+        width: 100%;
+        height: var(--parallax-height);
+    }
+    /* Obrazek wyższy od pasa o przesuw z góry i z dołu — przy skrajnych pozycjach nie odsłania krawędzi */
+    .parallax-image-img {
+        position: absolute;
+        left: 0;
+        top: calc(var(--parallax-shift) * -1);
+        width: 100%;
+        max-width: none;
+        height: calc(100% + var(--parallax-shift) * 2);
+        object-fit: cover;
+        pointer-events: none;
+        will-change: transform;
+    }
+    /* Treść nad obrazkiem, w kolumnie wyśrodkowanej w pionie — przy height="auto" po prostu rozpycha pas */
+    .parallax-image-content {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        height: 100%;
+    }
+</style>
+
+
+<script>
+    import gsap from "gsap";
+    import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    //Bez animacji, gdy użytkownik wyłączył ruch w systemie — obrazek zostaje wyśrodkowany
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    document.querySelectorAll<HTMLElement>(".parallax-image").forEach((wrapper) => {
+        const img = wrapper.querySelector<HTMLImageElement>(".parallax-image-img");
+        if (!img || reduceMotion) return;
+
+        //Przesuw w % wysokości pasa przeliczony na % wysokości obrazka (yPercent liczy się od obrazka)
+        const shift = Number(wrapper.dataset.parallaxShift ?? 30);
+        const imgShift = (shift / (100 + shift * 2)) * 100;
+
+        //Od wejścia dolnej krawędzi pasa na ekran do wyjścia górnej — obrazek jedzie z góry na dół, scrub wiąże postęp ze scrollem
+        gsap.fromTo(img, { yPercent: -imgShift }, {
+            yPercent: imgShift,
+            ease: "none",
+            scrollTrigger: {
+                trigger: wrapper,
+                start: "top bottom",
+                end: "bottom top",
+                scrub: true,
+            },
+        });
+
+        //Po doczytaniu leniwego obrazka wysokości mogą się zmienić — przelicz pozycje triggerów
+        if (!img.complete) img.addEventListener("load", () => ScrollTrigger.refresh(), { once: true });
+    });
+</script>

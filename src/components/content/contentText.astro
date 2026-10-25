@@ -1,0 +1,71 @@
+---
+//Akapit treści pod ContentTitle — tekst przez slot, rozmiar z propsa (domyślnie zwykły).
+//
+//Przykład użycia:
+//
+//  ---
+//  import ContentText from "../content/contentText.astro";
+//  ---
+//  <ContentText>Uczymy groomingu, ale przede wszystkim uczymy ludzi.</ContentText>
+//  <ContentText size="lg" withPawDivider>Zapraszamy do Akademii Oohs&Woofs.</ContentText>
+
+import PawDivider from "../global/pawDevider.astro";
+
+export interface Props {
+    size?: "sm" | "md" | "lg"
+    class?: string,
+    isListItem?: boolean
+    withPawDivider?: boolean
+}
+
+const { size = "md", class: className = "", isListItem = false, withPawDivider = false } = Astro.props;
+
+const SIZE_CLASSES = {
+    sm: "text-content-sm",
+    md: "text-content",
+    lg: "text-content-lg",
+};
+---
+
+<div class="content-text-block">
+    <p class:list={["content-text", { "content-text-li": isListItem }, SIZE_CLASSES[size], className]}>
+        <slot />
+    </p>
+
+    {withPawDivider && (
+        <PawDivider class="content-text-divider" color="var(--color-primary-600)" size={22} pawAnimation={false} />
+    )}
+</div>
+
+<style>
+    .content-text-block {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+    }
+
+    .content-text {
+        /* Maksymalna szerokość w znakach — dłuższe linie źle się czyta */
+        max-width: 82ch;
+        text-wrap: pretty;
+        line-height: 1.75;
+        letter-spacing: 0.01em;
+        font-weight: 500;
+        color: var(--color-dark-900);
+        margin: 0 0 1.1rem;
+        width: 100%;
+    }
+
+    .content-text:last-child {
+        margin-bottom: 0;
+    }
+
+    .content-text-li {
+        color: var(--color-dark-800);
+    }
+
+    .content-text-divider {
+        margin: 0.25rem auto 0;
+    }
+</style>

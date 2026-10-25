@@ -129,11 +129,11 @@ const timeLeft = getTimeLeft(PROMOTION_DATE_END, CurrentDate);
         border-radius: 999px;
         /* Matowa szyba jak w panelu tekstu (#content-message) — półprzezroczyste tło + rozmyte zdjęcie pod spodem */
         background-color: color-mix(in oklab, var(--color-light-50) 70%, transparent);
-        backdrop-filter: blur(9.6px);
-        -webkit-backdrop-filter: blur(9.6px);
+        backdrop-filter: blur(9px);
+        -webkit-backdrop-filter: blur(9px);
         /* Ta sama obwódka i cień co elevation */
         border: 1px solid color-mix(in oklab, var(--color-dark-900) 10%, transparent);
-        box-shadow: 0 8px 24px -14.4px color-mix(in oklab, var(--color-dark-950) 55%, transparent);
+        box-shadow: 0 7.5px 22.5px -13.5px color-mix(in oklab, var(--color-dark-950) 55%, transparent);
 
         font-family: var(--font-text);
         color: var(--color-dark-800);

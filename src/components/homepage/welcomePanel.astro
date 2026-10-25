@@ -69,8 +69,8 @@ const [firstContent] = WELCOME_PANEL_CONTENTS;
         padding: 2rem 4rem;
         background-color: color-mix(in oklab, var(--color-light-50) 63%, transparent);
         /* Rozmyte zdjęcie pod półprzezroczystym tłem — efekt matowej szyby, tekst lepiej się odcina */
-        backdrop-filter: blur(9.6px);
-        -webkit-backdrop-filter: blur(9.6px);
+        backdrop-filter: blur(9px);
+        -webkit-backdrop-filter: blur(9px);
         border-radius: 4rem;
 
         /* Pod dekoracje: pozycjonowanie, przycięcie do zaokrąglenia i własny kontekst dla -z-10 */
@@ -92,11 +92,11 @@ const [firstContent] = WELCOME_PANEL_CONTENTS;
         /* Przygaszone, żeby nie walczyły z tekstem */
         opacity: 0.15;
     }
-    /* Tło szersze od panelu o 64px z każdej strony — przesuw przy wejściu/wyjściu (BACKGROUND_SHIFT w skrypcie) nie odsłania krawędzi */
+    /* Tło szersze od panelu o 60px z każdej strony — przesuw przy wejściu/wyjściu (BACKGROUND_SHIFT w skrypcie) nie odsłania krawędzi */
     .welcome-background {
-        left: -64px;
-        width: calc(100% + 128px);
-        /* Preflight Tailwinda daje img max-width: 100% — bez tego zdjęcie ucinało się do szerokości panelu i przy left: -64px zostawała przerwa z prawej */
+        left: -60px;
+        width: calc(100% + 120px);
+        /* Preflight Tailwinda daje img max-width: 100% — bez tego zdjęcie ucinało się do szerokości panelu i przy left: -60px zostawała przerwa z prawej */
         max-width: none;
     }
 
@@ -110,8 +110,8 @@ const [firstContent] = WELCOME_PANEL_CONTENTS;
     import { enterPawDivider, leavePawDivider } from "../global/pawDividerAnimations";
 
     const BACKGROUND_FADE_DURATION = 0.8;
-    //Przesuw zdjęcia w px — musi być mniejszy niż zapas 64px z .welcome-background
-    const BACKGROUND_SHIFT = 32;
+    //Przesuw zdjęcia w px — musi być mniejszy niż zapas 60px z .welcome-background
+    const BACKGROUND_SHIFT = 30;
 
     const panel = document.querySelector<HTMLDivElement>("#welcome-panel");
 

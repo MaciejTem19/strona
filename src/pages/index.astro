@@ -1,9 +1,62 @@
 ---
 import Layout from "../layouts/layout.astro";
 import WelcomePanel from "../components/homepage/welcomePanel.astro";
+import ContentParam from "../components/content/contentparam.astro";
+import ContentTitle from "../components/content/contentTitle.astro";
+import ContentText from "../components/content/contentText.astro";
+import ParallaxImage from "../components/content/parallaxImage.astro";
+import { ABOUT_SECTIONS, HOME_PARALLAX_IMAGE_URL } from "../components/homepage/texts";
+import WelcomePanelMap from "../components/homepage/welcomePanelMap.astro";
+
+//Pod panelem powitalnym tylko sekcje z tytułem
+const paramSections = ABOUT_SECTIONS.filter((section) => section.title);
 
 ---
 
 <Layout>
 	<WelcomePanel />
+	<div class="h-50"/>
+
+	<!-- Paramy na przemian z lewej i prawej — stronę ustawia ContentParam przez direction. Tło to zdjęcie z paralaksą -->
+	<ParallaxImage class="home-params" src={HOME_PARALLAX_IMAGE_URL} height="auto" shift={10}>
+		{
+			<ContentParam>
+				{paramSections.map( (e, index) => {
+					return <WelcomePanelMap id=`${index}-panel` data={e}/>
+				})}
+			</ContentParam>
+		}
+	</ParallaxImage>
 </Layout>
+
+
+<style>
+	/* :global — klasa trafia do ParallaxImage, scoped styl strony by go nie złapał */
+	:global(.home-params) {
+		padding: 3rem 0;
+	}
+	:global(.home-params .home-param-title) {
+		margin-bottom: 0.5rem;
+		font-size: 3rem;
+		color: var(--color-primary-700);
+	}
+	:global(.home-params .content-text) {
+		max-width: none;
+		font-size: 1.65rem;
+		line-height: 1.75;
+	}
+	/* Kropki listy w primary, tekst w tym samym kolorze co akapity */
+	.home-param-list {
+		display: flex;
+		flex-direction: column;
+		gap: 0.35rem;
+		padding-left: 1.5rem;
+		list-style: disc;
+		font-size: 1.65rem;
+		line-height: 1.6;
+		color: var(--color-dark-800);
+	}
+	.home-param-list li::marker {
+		color: var(--color-primary-600);
+	}
+</style>

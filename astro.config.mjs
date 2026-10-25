@@ -7,9 +7,9 @@ import icon from 'astro-icon';
 
 // https://astro.build/config
 export default defineConfig({
-  // GitHub Pages serves the project under /strona/
+  // GitHub Pages serves the project under /strona/ — BASE_PATH is set in the deploy workflow, locally it stays at /
   site: 'https://maciejtem19.github.io',
-  base: '/strona/',
+  base: process.env.BASE_PATH ?? '/',
 
   integrations: [react(), icon()],
 

@@ -63,12 +63,12 @@ const ICON_TELEPHONE_MESSAGE = "tel: +48 532 502 350"
         padding: 0.5rem;
         cursor: pointer;
     }
-    /* Ten sam bar co w guzikach navu: tertiary-500, 1.6px, rośnie od 0 do pełnej szerokości.
+    /* Ten sam bar co w guzikach navu: tertiary-500, 1.5px, rośnie od 0 do pełnej szerokości.
        Hover w guzikach trwa 0.2s dla koloru i 2× dłużej dla baru — tu tak samo */
     .header-icon-bar {
         width: 0;
-        height: 1.6px;
-        border-radius: 8px;
+        height: 1.5px;
+        border-radius: 7.5px;
         background-color: var(--color-tetriary-500);
         transition: width 0.4s ease;
     }
@@ -130,8 +130,8 @@ const ICON_TELEPHONE_MESSAGE = "tel: +48 532 502 350"
 
         const popper = createPopper(icon, tooltip, {
             placement: "bottom",
-            //Odstęp 6.4px od ikony
-            modifiers: [{ name: "offset", options: { offset: [0, 6.4] } }],
+            //Odstęp 6px od ikony
+            modifiers: [{ name: "offset", options: { offset: [0, 6] } }],
         })
 
         icon.addEventListener("mouseenter", () => {

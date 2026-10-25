@@ -82,7 +82,7 @@ export const HEADER_PANEL_BUTTONS: headerButtonsContent[] = [
 //Strona "O nas" — tekst od klientki podzielony na sekcje. Akapit albo lista punktów, w kolejności jak w oryginale
 type aboutBlock = { paragraph: string } | { list: string[] }
 
-interface aboutSection {
+export interface aboutSection {
     title?: string,
     blocks: aboutBlock[],
 }
@@ -160,3 +160,6 @@ export const ABOUT_SUPPORT_QUOTE = "Damy Ci ogromne wsparcie w starcie."
 
 export const ABOUT_CONTACT_TEXT = "Zadzwoń dopytaj o szczegóły"
 export const ABOUT_CONTACT_PHONE = "884 701 223"
+
+//Zdjęcie z paralaksą między paramami na stronie głównej
+export const HOME_PARALLAX_IMAGE_URL = "https://picsum.photos/id/1025/1920/1080"

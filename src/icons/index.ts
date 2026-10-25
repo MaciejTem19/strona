@@ -1,0 +1,11 @@
+export { default as PawSvg } from "./PawSvg.astro";
+export { default as BallSvg } from "./BallSvg.astro";
+export { default as BoneSvg } from "./BoneSvg.astro";
+export { default as ArrowRightSvg } from "./ArrowRightSvg.astro";
+export { default as DottedArrowSvg } from "./DottedArrowSvg.astro";
+export { default as MapPinSvg } from "./MapPinSvg.astro";
+export { default as ClockSvg } from "./ClockSvg.astro";
+export { default as PhoneSvg } from "./PhoneSvg.astro";
+export { default as MailSvg } from "./MailSvg.astro";
+export { default as InstagramSvg } from "./InstagramSvg.astro";
+export { default as FacebookSvg } from "./FacebookSvg.astro";

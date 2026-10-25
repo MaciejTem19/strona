@@ -3,6 +3,9 @@ import "../styles/tailwind.css";
 import ThemePalette from "../components/global/themePalette.astro";
 import PaletteExamples from "../components/global/paletteExamples.astro";
 import PawDivider from "../components/global/pawDevider.astro";
+import ContentTitle from "../components/content/contentTitle.astro";
+import ContentText from "../components/content/contentText.astro";
+import { ABOUT_SECTIONS, ABOUT_SUPPORT_QUOTE, ABOUT_WELCOME_SUBTITLE, ABOUT_WELCOME_TITLE } from "../components/homepage/texts";
 ---
 
 <html lang="pl">
@@ -28,6 +31,34 @@ import PawDivider from "../components/global/pawDevider.astro";
 				<button type="button" class="paw-test-button" data-paw-action="show">showPawDivider</button>
 			</div>
 		</section>
+
+		<!-- ContentTitle i ContentText — warianty pojedynczo, a niżej cała strona "O nas" złożona z tekstów w texts.ts -->
+		<section class="flex flex-col gap-6 p-10">
+			<h2 class="text-header2">ContentTitle / ContentText</h2>
+
+			<div class="flex flex-col gap-3">
+				<ContentTitle as="h1">{ABOUT_WELCOME_TITLE}</ContentTitle>
+				<ContentText size="lg" withPawDivider={true}>{ABOUT_WELCOME_SUBTITLE}</ContentText>
+			</div>
+
+			<div class="flex flex-col gap-3">
+				<ContentTitle as="h3">Rozmiary ContentText: sm / md / lg</ContentTitle>
+				<ContentText size="sm" withPawDivider={true}>{ABOUT_SUPPORT_QUOTE}</ContentText>
+				<ContentText withPawDivider={true}>{ABOUT_SUPPORT_QUOTE}</ContentText>
+				<ContentText size="lg" withPawDivider={true}>{ABOUT_SUPPORT_QUOTE}</ContentText>
+			</div>
+
+			<!-- Sekcje bez tytułu (pierwsza) pokazują same akapity; lista nie ma osobnego komponentu, więc zwykłe ul w kolorze tekstu -->
+			{ABOUT_SECTIONS.map((section) => (
+				<article class="flex flex-col gap-3">
+					{section.title && <ContentTitle>{section.title}</ContentTitle>}
+					{section.blocks.map((block) => "paragraph" in block
+						? <ContentText withPawDivider={true}>{block.paragraph}</ContentText>
+						: <ul class="content-test-list text-content">{block.list.map((item) => <li>{item}</li>)}</ul>
+					)}
+				</article>
+			))}
+		</section>
 	</body>
 </html>
 <style>
@@ -36,10 +67,15 @@ import PawDivider from "../components/global/pawDevider.astro";
     }
     .paw-test-button {
         padding: 0.4rem 1rem;
-        border: 1.6px solid var(--color-dark-800);
+        border: 1.5px solid var(--color-dark-800);
         border-radius: 999px;
         font-family: var(--font-mono);
         cursor: pointer;
+    }
+    .content-test-list {
+        list-style: disc;
+        padding-left: 1.5rem;
+        color: var(--color-dark-800);
     }
 
 </style>

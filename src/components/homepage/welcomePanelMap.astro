@@ -1,0 +1,43 @@
+---
+import { title } from 'motion/react-client';
+import ContentTitle from '../content/contentTitle.astro';
+import type { aboutSection } from './texts';
+import WelcomePanelText from './welcomePanelText.astro';
+import ContentText from '../content/contentText.astro';
+
+export interface Props {
+    data: aboutSection,
+    id: string
+}
+
+const { data, id } = Astro.props
+
+---
+
+<div class="welcome-panel-map">
+    {data.title && <ContentTitle as="h2">
+        {data.title}
+    </ContentTitle>}
+    {data.blocks.map((section, index) => (
+        "paragraph" in section ?
+            <ContentText withPawDivider={true}>
+                {section.paragraph}
+            </ContentText> 
+            : 
+            <ContentText isListItem={true}>
+                {section.list.map(element => {
+                    return <span class="welcome-panel-map-list">{element}</span><br/>
+                })} 
+            </ContentText>
+    ))}
+</div>
+
+<style>
+    .welcome-panel-map-list {
+        padding-left: 2rem;
+    }
+    .welcome-panel-map-list::before {
+        content: "\2022      ";
+    }
+
+</style>

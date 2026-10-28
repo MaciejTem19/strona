@@ -1,0 +1,106 @@
+---
+import { FREE_COURSE_TEXT } from "../../../texts/content";
+import GradientButton from "../../global/gradientButton.astro";
+import PawDevider from "../../global/pawDevider.astro";
+import FreeCourseButton from "./freeCourseButton.astro";
+
+export interface Props {}
+
+const { buttonDownlandText, buttonMoreText, content, footerText, imgUrl, title, titleSecond } = FREE_COURSE_TEXT;
+---
+
+<div class="free-course-shell" id="free-course-shell">
+    <div class="free-course-section">
+        <div class="free-course-content">
+            <h1 id="free-couse-h1">
+                {title}
+            </h1>
+            <h3 id="free-course-h3">
+                {titleSecond}
+            </h3>
+            <PawDevider color="var(--color-secondary-700)" size={"1.75rem"}/>
+            <p id="free-course-p">
+                {content}
+            </p>
+            <div class="mt-auto"></div>
+        </div>
+        
+        <div class="free-course-second">
+            <div class="free-course-buttons">
+                <FreeCourseButton text={buttonMoreText} type="primary"/>
+                <FreeCourseButton text={buttonDownlandText} type="secondary"/>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    @reference "../../../styles/tailwind.css";
+
+    .free-course-shell {
+        position: relative;
+        width: 100%;
+        /* min-height: 32rem; */
+        height: 50rem;
+        overflow: hidden;
+        /* border-radius: 2rem; */
+        background-image:
+            linear-gradient(
+                90deg,
+                rgba(255, 248, 242, 1) 0%,
+                rgba(255, 248, 242, 1) 0%,
+                rgba(255, 248, 242, 1) 52%,
+                rgba(255, 248, 242, 0.12) 62%,
+                rgba(255, 248, 242, 0.02) 100%
+            ),
+            url("https://picsum.photos/id/12/3000/2000");
+        background-size: cover;
+        background-position: center right;
+    }
+
+    .free-course-section {
+        height: inherit;
+        grid-template-columns: 1fr 1fr;
+        display: grid;
+    }
+
+    .free-course-content {
+        @apply pt-15 pr-25 pl-80
+    }
+
+    .free-course-content h1 {
+        @apply text-header1
+    }
+
+    .free-course-content h3 {
+        @apply text-header2 text-primary-700 text-4xl! mt-2 mb-7
+    }
+
+    .free-course-content p {
+        @apply text-param-sm text-2xl text-dark-700 ml-4 mt-15 mb-15 mr-4
+    }
+
+    .free-course-second {
+        height: 100%;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: end;
+        padding: 2rem;
+    }
+    
+    .free-course-buttons {
+        margin-top: auto;
+        justify-content: center;
+        gap: 2rem;
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+    }
+</style>
+
+<script>
+    
+    // const 
+
+</script>

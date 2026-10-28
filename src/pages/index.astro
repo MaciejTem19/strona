@@ -7,6 +7,7 @@ import ContentText from "../components/content/contentText.astro";
 import ParallaxImage from "../components/content/parallaxImage.astro";
 import { ABOUT_SECTIONS, HOME_PARALLAX_IMAGE_URL } from "../components/homepage/texts";
 import WelcomePanelMap from "../components/homepage/welcomePanelMap.astro";
+import FreeCoursePanel from "../components/content/freecourse/freeCoursePanel.astro";
 
 //Pod panelem powitalnym tylko sekcje z tytułem
 const paramSections = ABOUT_SECTIONS.filter((section) => section.title);
@@ -16,13 +17,15 @@ const paramSections = ABOUT_SECTIONS.filter((section) => section.title);
 <Layout>
 	<WelcomePanel />
 	<div class="h-50"/>
+	<FreeCoursePanel />
+	<div class="h-50"/>
 
 	<!-- Paramy na przemian z lewej i prawej — stronę ustawia ContentParam przez direction. Tło to zdjęcie z paralaksą -->
-	<ParallaxImage class="home-params" src={HOME_PARALLAX_IMAGE_URL} height="auto" shift={10}>
+	<ParallaxImage class="home-params" src={HOME_PARALLAX_IMAGE_URL} height="auto" y={600}>
 		{
 			<ContentParam>
 				{paramSections.map( (e, index) => {
-					return <WelcomePanelMap id=`${index}-panel` data={e}/>
+					return <WelcomePanelMap id=`${index}-panel` data={e} pawDivider={index != 0}/>
 				})}
 			</ContentParam>
 		}

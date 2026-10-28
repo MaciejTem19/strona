@@ -31,10 +31,6 @@ const SIZE_CLASSES = {
     <p class:list={["content-text", { "content-text-li": isListItem }, SIZE_CLASSES[size], className]}>
         <slot />
     </p>
-
-    {withPawDivider && (
-        <PawDivider class="content-text-divider" color="var(--color-primary-600)" size={22} pawAnimation={false} />
-    )}
 </div>
 
 <style>

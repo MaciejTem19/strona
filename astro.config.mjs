@@ -9,6 +9,7 @@ import icon from 'astro-icon';
 export default defineConfig({
   // GitHub Pages serves the project under /strona/ — BASE_PATH is set in the deploy workflow, locally it stays at /
   site: 'https://maciejtem19.github.io',
+  // @ts-ignore
   base: process.env.BASE_PATH ?? '/',
 
   integrations: [react(), icon()],

@@ -25,7 +25,29 @@ const DOT_RESIZE_DURATION = 0.45
 const DOT_IDLE_COLOR = withAlpha("#2f3437", 0.3)
 const DOT_TRACK_COLOR = withAlpha("#fb9637", 0.3)
 
-export default function WelcomePanelButtons() {
+
+type ArrowWithHelpProp = { 
+    type: "left" | "right", 
+    contentIndex: number, 
+    contentAnimation: AnimationType,
+    onGoTo: (index: number) => void 
+} 
+
+
+function ArrowWithHelp({contentAnimation, contentIndex, onGoTo, type} : ArrowWithHelpProp) {
+// const ArrowWithHelp = ({ type, contentIndex, contentAnimation, onGoTo }: { type: "left" | "right", contentIndex: number, contentAnimation: AnimationType, onGoTo: (index: number) => void }) => {
+
+    const [hovered, setHovered] = useState(false)
+    const target = contentIndex + (type === "left" ? -1 : 1)
+    const targetName = WELCOME_CONTENTS[(target + WELCOME_CONTENTS.length) % WELCOME_CONTENTS.length]
+
+    return <span className="relative flex" onPointerEnter={() => setHovered(true)} onPointerLeave={() => setHovered(false)}>
+        <HelpDotInfo isShown={hovered} animationFase={contentAnimation} text={targetName} size="large" />
+        <PhotoButton type={type} onClick={() => onGoTo(target)} />
+    </span>
+}
+
+export function WelcomePanelButtons() {
 
     const [contentIndex, setContentIndex] = useState(0)
     const [contentAnimation, setContentAnimation] = useState<AnimationType>("entering")
@@ -64,19 +86,7 @@ export default function WelcomePanelButtons() {
     </div>
 }
 
-
-const ArrowWithHelp = ({ type, contentIndex, contentAnimation, onGoTo }: { type: "left" | "right", contentIndex: number, contentAnimation: AnimationType, onGoTo: (index: number) => void }) => {
-
-    const [hovered, setHovered] = useState(false)
-    const target = contentIndex + (type === "left" ? -1 : 1)
-    const targetName = WELCOME_CONTENTS[(target + WELCOME_CONTENTS.length) % WELCOME_CONTENTS.length]
-
-    return <span className="relative flex" onPointerEnter={() => setHovered(true)} onPointerLeave={() => setHovered(false)}>
-        <HelpDotInfo isShown={hovered} animationFase={contentAnimation} text={targetName} size="large" />
-        <PhotoButton type={type} onClick={() => onGoTo(target)} />
-    </span>
-}
-
+export default WelcomePanelButtons
 
 export type SwitchDotsProps = {
     contentIndex: number,

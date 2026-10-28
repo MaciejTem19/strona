@@ -30,6 +30,20 @@ export type ContactContent = {
     buttonText: string
 }
 
+export const FREE_COURSE_TEXT = {
+    title: "Nie wiesz czy czy ta praca jest dla Ciebie?",
+    titleSecond: "Pobierz bezpłatny kurs wstępny i zobacz czy ci się spodoba.",
+    content: `Wierzymy, że większość waha się przed podjęciem decyzji wyboru kursu.
+             U nas nie musisz kupować kota w worku i bezpłatnie możesz zobaczyć z czym wiąrze się praca groomera. 
+             Matariały posiadają niezbędne informacje, które każdy początkujący groomer musi znać.`,
+    footerText: "Rozwij swoje obawy kompletnie za darmo z naszym darmowym mini-kursem!",
+
+    buttonMoreText: "Dowiedz się więcej",
+    buttonDownlandText: "Pobierz darmowe materiały",
+
+    imgUrl: "https://picsum.photos/id/1/3000/2000"
+}
+
 export const CONTACT_CONTENT: ContactContent = {
     heading: "Wpadnij z psem",
     rows: [

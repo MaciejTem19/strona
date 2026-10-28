@@ -1,0 +1,27 @@
+
+.global-content-padding {
+    padding-left: 22.5rem;
+    padding-right: 22.5rem;
+}
+/* .global-content-margin {
+    margin-left: 22.5rem;
+    margin-right: 22.5rem;
+} */
+
+/* .elevation {
+    background-color: var(--color-light-50);
+    border: 1px solid color-mix(in oklab, var(--color-dark-900) 10%, transparent);
+    box-shadow: 0 7.5px 22.5px -13.5px color-mix(in oklab, var(--color-dark-950) 55%, transparent);
+}
+
+.elevation-lg {
+    background-color: var(--color-light-50);
+    border: 1px solid color-mix(in oklab, var(--color-dark-900) 15%, transparent);
+    box-shadow: 0 12px 33px -15px color-mix(in oklab, var(--color-dark-950) 70%, transparent);
+}
+
+.elevation-sm {
+    background-color: var(--color-light-50);
+    border: 1px solid color-mix(in oklab, var(--color-dark-900) 7%, transparent);
+    box-shadow: 0 4.5px 13.5px -10.5px color-mix(in oklab, var(--color-dark-950) 40%, transparent);
+} */

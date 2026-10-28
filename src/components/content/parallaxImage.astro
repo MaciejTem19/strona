@@ -9,10 +9,10 @@
 //  import ParallaxImage from "../content/parallaxImage.astro";
 //  ---
 //  <ParallaxImage src="https://picsum.photos/id/1025/1920/1080" />
-//  <ParallaxImage src={`${import.meta.env.BASE_URL}zdjecie.jpg`} height="50vh" shift={20}>
+//  <ParallaxImage src={`${import.meta.env.BASE_URL}zdjecie.jpg`} height="50vh" y={120}>
 //      <h2 class="text-header1">Tekst na obrazku</h2>
 //  </ParallaxImage>
-//  <ParallaxImage src="https://picsum.photos/id/1025/1920/1080" height="auto" shift={10}>
+//  <ParallaxImage src="https://picsum.photos/id/1025/1920/1080" height="auto" y={80}>
 //      <ContentParam direction="left">...</ContentParam>
 //  </ParallaxImage>
 
@@ -21,15 +21,18 @@ export interface Props {
     alt?: string
     //Wysokość pasa z obrazkiem — "auto", gdy obrazek ma być tłem treści ze slotu
     height?: string
-    //Przesuw obrazka w % jego wysokości, w każdą stronę — im więcej, tym wolniej obrazek "jedzie" względem strony
+    //Przesunięcie obrazka w pikselach w każdą stronę. Im większa wartość, tym większy zakres paralaksy.
+    y?: number
+    // @deprecated Użyj y; zachowane dla kompatybilności z wcześniejszym API.
     shift?: number
     class?: string
 }
 
-const { src, alt = "", height = "60vh", shift = 50, class: className = "" } = Astro.props;
+const { src, alt = "", height = "60vh", y, shift, class: className = "" } = Astro.props;
+const parallaxShift = Number.isFinite(y) ? Number(y) : Number.isFinite(shift) ? Number(shift) : 60;
 ---
 
-<div class:list={["parallax-image", className]} style={{ "--parallax-height": height, "--parallax-shift": `${shift}%` }} data-parallax-shift={shift}>
+<div class:list={["parallax-image", className]} style={{ "--parallax-height": height, "--parallax-shift": `${parallaxShift}px` }} data-parallax-shift={parallaxShift}>
     <img class="parallax-image-img" src={src} alt={alt} loading="lazy" decoding="async" />
     {Astro.slots.has("default") && (
         <div class="parallax-image-content">
@@ -82,13 +85,12 @@ const { src, alt = "", height = "60vh", shift = 50, class: className = "" } = As
         const img = wrapper.querySelector<HTMLImageElement>(".parallax-image-img");
         if (!img || reduceMotion) return;
 
-        //Przesuw w % wysokości pasa przeliczony na % wysokości obrazka (yPercent liczy się od obrazka)
-        const shift = Number(wrapper.dataset.parallaxShift ?? 30);
-        const imgShift = (shift / (100 + shift * 2)) * 100;
+        //Przesunięcie obrazka wyrażone w pikselach, bez przeliczania na procenty obrazka.
+        const shift = Number(wrapper.dataset.parallaxShift ?? 60);
 
-        //Od wejścia dolnej krawędzi pasa na ekran do wyjścia górnej — obrazek jedzie z góry na dół, scrub wiąże postęp ze scrollem
-        gsap.fromTo(img, { yPercent: -imgShift }, {
-            yPercent: imgShift,
+        //Od wejścia dolnej krawędzi pasa na ekran do wyjścia górnej — obrazek jedzie z góry na dół, scrub wiąże postęp ze scrollem.
+        gsap.fromTo(img, { y: -shift }, {
+            y: shift,
             ease: "none",
             scrollTrigger: {
                 trigger: wrapper,

@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "globalStyles.css";
 
 @layer theme, base, components, utilities;
 @import "tailwindcss/theme.css" layer(theme);
@@ -252,7 +253,7 @@
 
 /* Panele mają własne jasne tło, żeby odcinały się od beżowego tła strony */
 @utility elevation {
-    background-color: var(--color-light-50);
+    /* background-color: var(--color-light-50); */
     border: 1px solid color-mix(in oklab, var(--color-dark-900) 10%, transparent);
     box-shadow: 0 7.5px 22.5px -13.5px color-mix(in oklab, var(--color-dark-950) 55%, transparent);
 }

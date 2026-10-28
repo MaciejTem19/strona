@@ -1,4 +1,6 @@
 ---
+import PawDevider from "../global/pawDevider.astro";
+
 //Tytuł sekcji treści — tekst przez slot, poziom nagłówka z propsa (domyślnie h2).
 //
 //Przykład użycia:
@@ -10,13 +12,14 @@
 //  <ContentTitle as="h3">Dla kogo jest kurs</ContentTitle>
 
 export interface Props {
-    as?: "h1" | "h2" | "h3" | "h4"
-    class?: string
+    as?: "h1" | "h2" | "h3" | "h4",
+    withPawDivider?: boolean,
+    class?: string,
 }
 
-const { as: Tag = "h2", class: className = "" } = Astro.props;
+const { as: Tag = "h2", class: className = "", withPawDivider: withPawDivider = false} = Astro.props;
 ---
-
+<!-- {withPawDivider && <PawDevider />} -->
 <Tag class:list={["content-title text-header1", className]}>
     <slot />
 </Tag>

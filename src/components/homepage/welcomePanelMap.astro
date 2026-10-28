@@ -8,19 +8,20 @@ import ContentText from '../content/contentText.astro';
 export interface Props {
     data: aboutSection,
     id: string
+    pawDivider?: boolean
 }
 
-const { data, id } = Astro.props
+const { data, id, pawDivider } = Astro.props
 
 ---
 
 <div class="welcome-panel-map">
-    {data.title && <ContentTitle as="h2">
+    {data.title && <ContentTitle as="h2" withPawDivider={pawDivider}>
         {data.title}
     </ContentTitle>}
     {data.blocks.map((section, index) => (
         "paragraph" in section ?
-            <ContentText withPawDivider={true}>
+            <ContentText>
                 {section.paragraph}
             </ContentText> 
             : 
